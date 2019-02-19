@@ -135,6 +135,9 @@
     <Image Include="images\scoreboard.png" />
     <Image Include="images\start_game.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="images\Sans.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

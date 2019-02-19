@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <string>
 #undef main
 
 class menu_item
@@ -30,8 +31,10 @@ class Game
 		SDL_Texture *options_textura;
 		SDL_Texture *quit_textura;
 		SDL_Texture *left_score;
+		SDL_Texture *right_score;
+		SDL_Texture *dvotocka_textura;
 
-		//TTF_Font* font;
+		TTF_Font* font;
 		SDL_Color boja;
 		SDL_Surface *povrsina;
 		SDL_Rect start_game;
@@ -39,7 +42,10 @@ class Game
 		SDL_Rect options;
 		SDL_Rect quit;
 		SDL_Rect prvi_broj;
-		SDL_Rect pom;
+		SDL_Rect drugi_broj;
+		SDL_Rect dvotocka;
+
+		std::string broj;
 
 		const int sirina = 1000;
 		const int visina = 600;
@@ -52,6 +58,8 @@ class Game
 		int rotator;
 		int pad_collision_surface;
 		int koeficijent;
+		int lijevi_rezultat;
+		int desni_rezultat;
 
 		bool desno;
 		bool gore;
@@ -59,7 +67,9 @@ class Game
 
 		void init();
 		void render();
+		void render_score(SDL_Texture **score, int number);
 		void free();
+		void free_score(SDL_Texture *score);
 		void DrawCircle(SDL_Renderer *Renderer, int _x, int _y, int radius);
 		bool kretnja_loptice();
 		bool main_loop();

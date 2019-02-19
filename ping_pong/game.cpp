@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <string>
 #include "game.h"
 
 using namespace std;
@@ -19,6 +20,8 @@ Game::Game()
 	this->quit_textura = nullptr;
 	this->povrsina = nullptr;
 	this->left_score = nullptr;
+	this->right_score = nullptr;
+	this->dvotocka_textura = nullptr;
 
 	lijevi_pad = { 20, 20, 20, 100 };
 	desni_pad = { 720, 20, 20, 100 };
@@ -29,17 +32,19 @@ Game::Game()
 	options = { 800, 200, 150, 70 };
 	quit = { 800, 290, 150, 70 };
 	prvi_broj = { 310, 520, 50, 70 };
-	//pom = {0,0, 92, 128};
-	// 120, 230, 340
-	pom = { 345, 0, 92, 128 };
+	drugi_broj = { 410, 520, 50, 70 };
+	dvotocka = { 360, 520, 50, 70 };
+
+	lijevi_rezultat = 0;
+	desni_rezultat = 0;
+	broj = to_string(lijevi_rezultat);
 
 	desno = gore = true;
 	pause = false;
 	pad_collision_surface = desni_pad.h / 2;
 	koeficijent = (pad_collision_surface / 20) + 0.5;
 
-
-	boja = { 202, 206, 173 };
+	boja = { 255, 255, 255 };
 
 	frame_time = 0;
 	speed_x = 5;
@@ -52,7 +57,7 @@ Game::~Game()
 {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(prozor);
-	//TTF_Quit();
+	TTF_Quit();
 }
 
 void Game::DrawCircle(SDL_Renderer *Renderer, int _x, int _y, int radius)
@@ -90,24 +95,35 @@ void Game::DrawCircle(SDL_Renderer *Renderer, int _x, int _y, int radius)
 	}
 }
 
+void Game::free_score(SDL_Texture *score)
+{
+	if (score != nullptr)
+	{
+		SDL_DestroyTexture(score);
+		score = nullptr;
+	}
+
+	if (povrsina != nullptr)
+	{
+		SDL_FreeSurface(povrsina);
+		povrsina = nullptr;
+	}
+}
+
 void Game::free()
 {
-	// if (start_game_textura != NULL)
-	// {
-	// 	SDL_DestroyTexture(start_game_textura);
-	// 	start_game_textura = NULL;
-	// }
+}
 
-	// if (povrsina != NULL)
-	// {
-	// 	SDL_FreeSurface(povrsina);
-	// 	povrsina = NULL;
-	// }
+void Game::render_score(SDL_Texture **score, int number)
+{
+	free_score(*score);
+	broj = to_string(number);
+	povrsina = TTF_RenderText_Solid(font, broj.c_str(), boja);
+	*score = SDL_CreateTextureFromSurface(renderer, povrsina);
 }
 
 void Game::render()
 {
-	//	free();
 	SDL_RenderClear(renderer);
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 
@@ -115,20 +131,20 @@ void Game::render()
 	SDL_RenderFillRect(renderer, &desni_pad);
 	SDL_RenderFillRect(renderer, &loptica);
 
+	SDL_RenderDrawRect(renderer, &prvi_broj);
+	SDL_RenderDrawRect(renderer, &drugi_broj);
+	SDL_RenderDrawRect(renderer, &dvotocka);
+
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &game_window);
-	//	DrawCircle(renderer, loptica.x, loptica.y, loptica.r);
-
-	//	povrsina = TTF_RenderText_Solid(font, "Start game", boja);
-	//	
-	//	SDL_RenderCopy(renderer, start_game_textura, NULL, &start_game);
 	SDL_RenderCopy(renderer, start_game_textura, NULL, &start_game);
 	SDL_RenderCopy(renderer, scoreboard_textura, NULL, &scoreboard);
 	SDL_RenderCopy(renderer, options_textura, NULL, &options);
 	SDL_RenderCopy(renderer, quit_textura, NULL, &quit);
-
-	SDL_RenderDrawRect(renderer, &prvi_broj);
-	SDL_RenderCopy(renderer, left_score, &pom, &prvi_broj);
+	SDL_RenderCopy(renderer, dvotocka_textura, NULL, &dvotocka);
+	SDL_RenderCopy(renderer, left_score, NULL, &prvi_broj);
+	SDL_RenderCopy(renderer, right_score, NULL, &drugi_broj);
+	//render_score();
 
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 
@@ -154,6 +170,8 @@ bool Game::kretnja_loptice()
 					speed_y = 0;
 					speed_x = 5;
 					loptica.x = game_window.w;
+					lijevi_rezultat++;
+					render_score(&left_score, lijevi_rezultat);
 				}
 
 				if ((loptica.x + loptica.w >= desni_pad.x) && y > desni_pad.y && y < (desni_pad.y + desni_pad.h))
@@ -175,7 +193,8 @@ bool Game::kretnja_loptice()
 					speed_y = 0;
 					speed_x = 5;
 					loptica.x = game_window.x;
-					pom.x += 110;
+					desni_rezultat++;
+					render_score(&right_score, desni_rezultat);
 				}
 
 				if ((loptica.x <= (lijevi_pad.x + lijevi_pad.w)) && loptica.y > lijevi_pad.y && loptica.y < (lijevi_pad.y + lijevi_pad.h))
@@ -251,10 +270,10 @@ bool Game::main_loop()
 					pause = !pause;
 					break;
 
-					kretnja_loptice();
-					render();
+			kretnja_loptice();
+			render();
 
-					return true;
+			return true;
 		}
 	}
 
@@ -283,16 +302,25 @@ void Game::init()
 		{
 			printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 		}
-		povrsina = IMG_Load("images/start_game.png");
+
+		if (TTF_Init() == -1)
+		{
+			cout << "Greska kod TTF inita!\n";
+		}
+		font = TTF_OpenFont("images/Sans.ttf", 100);
+
+		povrsina = TTF_RenderText_Solid(font, "Start game", boja);
 		start_game_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = IMG_Load("images/scoreboard.png");
+		povrsina = TTF_RenderText_Solid(font, "Scoreboard", boja);
 		scoreboard_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = IMG_Load("images/options.png");
+		povrsina = TTF_RenderText_Solid(font, "Options", boja);
 		options_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = IMG_Load("images/quit.png");
+		povrsina = TTF_RenderText_Solid(font, "Quit", boja);
 		quit_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = IMG_Load("images/numbers.png");
-		left_score = SDL_CreateTextureFromSurface(renderer, povrsina);
+		povrsina = TTF_RenderText_Solid(font, ":", boja);
+		dvotocka_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
+		render_score(&left_score, 0);
+		render_score(&right_score, 0);
 
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 		render();
