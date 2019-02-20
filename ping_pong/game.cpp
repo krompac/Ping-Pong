@@ -51,10 +51,6 @@ Game::Game()
 
 	boja = { 255, 255, 255 };
 
-	frame_time = 0;
-	speed_x = 5;
-	speed_y = 0;
-
 	init();
 }
 
@@ -67,6 +63,10 @@ Game::~Game()
 
 void Game::initialize_game_components()
 {
+	frame_time = 0;
+	speed_x = 5;
+	speed_y = 0;
+
 	lijevi_pad = { 20, 20, 20, 100 };
 	desni_pad = { 720, 20, 20, 100 };
 	loptica = { 340, 220, 20, 20 };
