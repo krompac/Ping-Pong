@@ -129,6 +129,7 @@
     <ClInclude Include="game.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="images\Knight_attack_01.png" />
     <Image Include="images\numbers.png" />
     <Image Include="images\options.png" />
     <Image Include="images\quit.png" />

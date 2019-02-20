@@ -17,6 +17,8 @@ class Game
 	private:
 		SDL_Window *prozor;
 		SDL_Renderer *renderer;
+		SDL_Event dogadjaj;
+		SDL_Event message_dogadjaj;
 		SDL_Rect lijevi_pad;
 		SDL_Rect desni_pad;
 		// struct Loptica
@@ -33,6 +35,8 @@ class Game
 		SDL_Texture *left_score;
 		SDL_Texture *right_score;
 		SDL_Texture *dvotocka_textura;
+		SDL_Texture *message_textura;
+		SDL_Texture *answers_textura[2];
 
 		TTF_Font* font;
 		SDL_Color boja;
@@ -43,7 +47,11 @@ class Game
 		SDL_Rect quit;
 		SDL_Rect prvi_broj;
 		SDL_Rect drugi_broj;
+		SDL_Rect message_box;
+		SDL_Rect message;
+		SDL_Rect answers[2];
 		SDL_Rect dvotocka;
+		SDL_Rect menuitems[4];
 
 		std::string broj;
 
@@ -60,17 +68,23 @@ class Game
 		int koeficijent;
 		int lijevi_rezultat;
 		int desni_rezultat;
+		int menu_position;
+		int message_position;
 
 		bool desno;
 		bool gore;
 		bool pause;
 
 		void init();
-		void render();
+		void render(bool is_message = false);
 		void render_score(SDL_Texture **score, int number);
+		void initialize_message();
+		void initialize_game_components();
 		void free();
+		void menu();
 		void free_score(SDL_Texture *score);
 		void DrawCircle(SDL_Renderer *Renderer, int _x, int _y, int radius);
+		bool message_box_action();
 		bool kretnja_loptice();
 		bool main_loop();
 

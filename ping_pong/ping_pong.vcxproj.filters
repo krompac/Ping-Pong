@@ -43,6 +43,9 @@
     <Image Include="images\scoreboard.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="images\Knight_attack_01.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="images\Sans.ttf" />
