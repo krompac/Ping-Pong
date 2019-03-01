@@ -132,6 +132,7 @@
     <Image Include="images\Knight_attack_01.png" />
     <Image Include="images\numbers.png" />
     <Image Include="images\options.png" />
+    <Image Include="images\circle.png" />
     <Image Include="images\quit.png" />
     <Image Include="images\scoreboard.png" />
     <Image Include="images\start_game.png" />

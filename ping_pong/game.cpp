@@ -25,9 +25,10 @@ Game::Game()
 	this->message_textura = nullptr;
 	this->answers_textura[0] = nullptr;
 	this->answers_textura[1] = nullptr;
-	
-	initialize_game_components();
+	this->loptica_slika = nullptr;
+
 	game_window = { 20, 20, 720, 480 };
+	options_window = { 20, 20, 720, 560 };
 	start_game = { 800, 20, 150, 70 };
 	scoreboard = { 800, 110, 150, 70 };
 	options = { 800, 200, 150, 70 };
@@ -46,6 +47,8 @@ Game::Game()
 	menuitems[2] = options;
 	menuitems[3] = quit;
 
+	starting_ball_speed = 5;
+	initialize_game_components();
 	pad_collision_surface = desni_pad.h / 2;
 	koeficijent = (pad_collision_surface / 20) + 0.5;
 
@@ -64,12 +67,14 @@ Game::~Game()
 void Game::initialize_game_components()
 {
 	frame_time = 0;
-	speed_x = 5;
+	speed_x = starting_ball_speed;
 	speed_y = 0;
 
 	lijevi_pad = { 20, 20, 20, 100 };
 	desni_pad = { 720, 20, 20, 100 };
-	loptica = { 340, 220, 20, 20 };
+	loptica = { 370, 250, 20, 20 };
+	
+
 	menu_position = message_position = 0;
 	
 	lijevi_rezultat = 0;
@@ -78,41 +83,6 @@ void Game::initialize_game_components()
 
 	desno = gore = true;
 	pause = false;
-}
-
-void Game::DrawCircle(SDL_Renderer *Renderer, int _x, int _y, int radius)
-{
-	int x = radius - 1;
-	int y = 0;
-	int tx = 1;
-	int ty = 1;
-	int err = tx - (radius << 1); // shifting bits left by 1 effectively
-								  // doubles the value. == tx - diameter
-	while (x >= y)
-	{
-		//  Each of the following renders an octant of the circle
-		SDL_RenderDrawPoint(Renderer, _x + x, _y - y);
-		SDL_RenderDrawPoint(Renderer, _x + x, _y + y);
-		SDL_RenderDrawPoint(Renderer, _x - x, _y - y);
-		SDL_RenderDrawPoint(Renderer, _x - x, _y + y);
-		SDL_RenderDrawPoint(Renderer, _x + y, _y - x);
-		SDL_RenderDrawPoint(Renderer, _x + y, _y + x);
-		SDL_RenderDrawPoint(Renderer, _x - y, _y - x);
-		SDL_RenderDrawPoint(Renderer, _x - y, _y + x);
-
-		if (err <= 0)
-		{
-			y++;
-			err += ty;
-			ty += 2;
-		}
-		if (err > 0)
-		{
-			x--;
-			tx += 2;
-			err += tx - (radius << 1);
-		}
-	}
 }
 
 void Game::free_score(SDL_Texture *score)
@@ -142,14 +112,13 @@ void Game::render_score(SDL_Texture **score, int number)
 	*score = SDL_CreateTextureFromSurface(renderer, povrsina);
 }
 
-void Game::render(bool is_message)
+void Game::render_game_window(bool is_message)
 {
 	SDL_RenderClear(renderer);
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 
 	SDL_RenderFillRect(renderer, &lijevi_pad);
 	SDL_RenderFillRect(renderer, &desni_pad);
-	SDL_RenderFillRect(renderer, &loptica);
 
 	SDL_RenderDrawRect(renderer, &prvi_broj);
 	SDL_RenderDrawRect(renderer, &drugi_broj);
@@ -157,6 +126,7 @@ void Game::render(bool is_message)
 
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &game_window);
+	
 
 	if (pause)
 	{
@@ -170,6 +140,7 @@ void Game::render(bool is_message)
 	SDL_RenderCopy(renderer, dvotocka_textura, NULL, &dvotocka);
 	SDL_RenderCopy(renderer, left_score, NULL, &prvi_broj);
 	SDL_RenderCopy(renderer, right_score, NULL, &drugi_broj);
+	SDL_RenderCopy(renderer, loptica_slika, NULL, &loptica);
 
 	if (is_message)
 	{
@@ -192,6 +163,15 @@ void Game::render(bool is_message)
 	SDL_RenderPresent(renderer);
 }
 
+void Game::render_options_window()
+{
+	SDL_RenderClear(renderer);
+
+	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
+	SDL_RenderDrawRect(renderer, &options_window);
+
+}
+
 void Game::initialize_message()
 {
 	message_position = 0;
@@ -205,7 +185,7 @@ void Game::initialize_message()
 
 bool Game::message_box_action()
 {
-	render(true);
+	render_game_window(true);
 
 	while (SDL_PollEvent(&message_dogadjaj))
 	{
@@ -236,22 +216,27 @@ bool Game::message_box_action()
 					}
 
 					pause = false;
-					render();
+					render_game_window();
 					SDL_Delay(500);
 					return false;
 			}
 		}
 
-		render(true);
+		render_game_window(true);
 		SDL_Delay(1);
 
 		return true;
 	}
 
-	render(true);
+	render_game_window(true);
 	SDL_Delay(1);
 
 	return true;
+}
+
+void Game::set_origin()
+{
+	ball_origin = { loptica.x + loptica.w / 2, loptica.y + loptica.h / 2 };
 }
 
 bool Game::kretnja_loptice()
@@ -266,36 +251,40 @@ bool Game::kretnja_loptice()
 			if (desno)
 			{
 				loptica.x += speed_x;
+				set_origin();
 
-				if (loptica.x + loptica.w >= game_window.w + game_window.x)
+				if (ball_origin.x + loptica.w / 2 >= game_window.w + game_window.x)
 				{
 					desno = false;
 					speed_y = 0;
-					speed_x = 5;
+					speed_x = starting_ball_speed;
 					loptica.x = game_window.w;
+					set_origin();
 					lijevi_rezultat++;
 					render_score(&left_score, lijevi_rezultat);
 				}
 
-				if ((loptica.x + loptica.w >= desni_pad.x) && y > desni_pad.y && y < (desni_pad.y + desni_pad.h))
+				if ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2  <= (desni_pad.y + desni_pad.h))
 				{
 					desno = false;
 					z_desni_pad = desni_pad.y + (desni_pad.h / 2);
-					speed_y = abs(z_desni_pad - y) / koeficijent;
-					speed_x = 6 - (speed_y / 5);
+					speed_y = abs(z_desni_pad - ball_origin.y) / koeficijent;
+					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
 					gore = (z_desni_pad < y);
 				}
 			}
 			else
 			{
 				loptica.x -= speed_x;
+				set_origin();
 
 				if (loptica.x <= game_window.x)
 				{
 					desno = true;
 					speed_y = 0;
-					speed_x = 5;
+					speed_x = starting_ball_speed;
 					loptica.x = game_window.x;
+					set_origin();
 					desni_rezultat++;
 					render_score(&right_score, desni_rezultat);
 				}
@@ -305,7 +294,7 @@ bool Game::kretnja_loptice()
 					desno = true;
 					z_lijevi_pad = lijevi_pad.y + (lijevi_pad.h / 2);
 					speed_y = abs(z_lijevi_pad - y) / koeficijent;
-					speed_x = 6 - (speed_y / 5);
+					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
 					gore = (z_lijevi_pad < y);
 				}
 			}
@@ -313,21 +302,25 @@ bool Game::kretnja_loptice()
 			if (gore)
 			{
 				loptica.y += speed_y;
+				set_origin();
 
 				if (loptica.y + loptica.h >= game_window.h + game_window.y)
 				{
 					gore = false;
 					loptica.y = game_window.h;
+					set_origin();
 				}
 			}
 			else
 			{
 				loptica.y -= speed_y;
+				set_origin();
 
 				if (loptica.y <= game_window.y)
 				{
 					gore = true;
 					loptica.y = game_window.y;
+					set_origin();
 				}
 			}
 		}
@@ -406,14 +399,14 @@ bool Game::main_loop()
 					break;
 
 			kretnja_loptice();
-			render();
+			render_game_window();
 
 			return true;
 		}
 	}
 
 	kretnja_loptice();
-	render();
+	render_game_window();
 	SDL_Delay(1);
 
 	return true;
@@ -457,7 +450,11 @@ void Game::init()
 		render_score(&left_score, 0);
 		render_score(&right_score, 0);
 
-		render();
+		povrsina = IMG_Load("images/circle.png");
+		loptica_slika = SDL_CreateTextureFromSurface(renderer, povrsina);
+		SDL_SetTextureColorMod(loptica_slika, 0x00, 0x00, 0xff);
+
+		render_game_window();
 
 		while (main_loop());
 	}
