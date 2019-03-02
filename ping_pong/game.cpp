@@ -47,7 +47,6 @@ Game::Game()
 	menuitems[2] = options;
 	menuitems[3] = quit;
 
-	starting_ball_speed = 5;
 	initialize_game_components();
 	pad_collision_surface = desni_pad.h / 2;
 	koeficijent = pad_collision_surface / 10; //+ 0.5;
@@ -66,6 +65,7 @@ Game::~Game()
 
 void Game::initialize_game_components()
 {
+	starting_ball_speed = 7.6;
 	frame_time = 0;
 	speed_x = starting_ball_speed;
 	speed_y = 0;
@@ -74,8 +74,6 @@ void Game::initialize_game_components()
 	desni_pad = { 720, 20, 20, 100 };
 	loptica = { 370, 250, 20, 20 };
 
-	menu_position = message_position = 0;
-	
 	lijevi_rezultat = 0;
 	desni_rezultat = 0;
 	broj = to_string(lijevi_rezultat);
@@ -253,6 +251,8 @@ bool Game::kretnja_loptice()
 
 				if (ball_origin.x + loptica.w / 2 >= game_window.w + game_window.x)
 				{
+					loptica.x = game_window.x + game_window.w - loptica.w;
+					set_origin();
 					desno = false;
 					lijevi_rezultat++;
 					render_score(&left_score, lijevi_rezultat);
@@ -263,11 +263,9 @@ bool Game::kretnja_loptice()
 					desno = false;
 					z_desni_pad = desni_pad.y + (desni_pad.h / 2);
 					speed_y = abs(z_desni_pad - ball_origin.y) / koeficijent;
-					cout << "z desni pad = " << z_desni_pad << endl;
-					cout << "ball_origin.y = " << ball_origin.y << endl;
-					cout << "speed_y = " << speed_y << endl;
 					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
 					gore = (z_desni_pad < y);
+					starting_ball_speed += 0.2;
 				}
 			}
 			else
@@ -277,6 +275,8 @@ bool Game::kretnja_loptice()
 
 				if (loptica.x <= game_window.x)
 				{
+					loptica.x = game_window.x;
+					set_origin();
 					desno = true;
 					desni_rezultat++;
 					render_score(&right_score, desni_rezultat);
@@ -289,6 +289,7 @@ bool Game::kretnja_loptice()
 					speed_y = abs(z_lijevi_pad - y) / koeficijent;
 					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
 					gore = (z_lijevi_pad < y);
+					starting_ball_speed += 0.2;
 				}
 			}
 
@@ -328,35 +329,39 @@ void Game::menu()
 
 bool Game::main_loop()
 {
+	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
+
+	if (!pause)
+	{
+		if (keyboard_state_array[SDL_SCANCODE_W])
+		{
+			if (lijevi_pad.y - 1 >= game_window.y)
+				lijevi_pad.y -= 1;
+		}
+		else if (keyboard_state_array[SDL_SCANCODE_S])
+		{
+			if (lijevi_pad.y + 1 + lijevi_pad.h <= game_window.h + game_window.y)
+				lijevi_pad.y += 1;
+		}
+		else if (keyboard_state_array[SDL_SCANCODE_UP])
+		{
+			if (desni_pad.y - 1 >= game_window.y)
+				desni_pad.y -= 1;
+		}
+		else if (keyboard_state_array[SDL_SCANCODE_DOWN])
+		{
+			if (desni_pad.y + 1 + desni_pad.h <= game_window.h + game_window.y)
+				desni_pad.y += 1;
+		}
+	}
+
 	while (SDL_PollEvent(&dogadjaj))
 	{
 		if (dogadjaj.type == SDL_QUIT)
 			return false;
 		else if (dogadjaj.type == SDL_KEYDOWN)
 		{
-			if (!pause)
-			{
-				switch (dogadjaj.key.keysym.sym)
-				{
-					case SDLK_UP:
-						if (desni_pad.y - 10 >= game_window.y)
-							desni_pad.y -= 10;
-						break;
-					case SDLK_DOWN:
-						if (desni_pad.y + 10 + desni_pad.h <= game_window.h + game_window.y)
-							desni_pad.y += 10;
-						break;
-					case SDLK_s:
-						if (lijevi_pad.y + 10 + lijevi_pad.h <= game_window.h + game_window.y)
-							lijevi_pad.y += 10;
-						break;
-					case SDLK_w:
-						if (lijevi_pad.y - 10 >= game_window.y)
-							lijevi_pad.y -= 10;
-						break;
-				}
-			}
-			else
+			if (pause)
 			{
 				if (dogadjaj.key.keysym.sym == SDLK_UP || dogadjaj.key.keysym.sym == SDLK_w)
 				{
@@ -445,7 +450,7 @@ void Game::init()
 
 		povrsina = IMG_Load("images/circle.png");
 		loptica_slika = SDL_CreateTextureFromSurface(renderer, povrsina);
-		SDL_SetTextureColorMod(loptica_slika, 0x00, 0x00, 0xff);
+		//SDL_SetTextureColorMod(loptica_slika, 0xff, 0x00, 0x00);
 
 		render_game_window();
 

@@ -66,7 +66,7 @@ class Game
 		int desni_rezultat;
 		int menu_position;
 		int message_position;
-		int starting_ball_speed;
+		float starting_ball_speed;
 
 		bool desno;
 		bool gore;
