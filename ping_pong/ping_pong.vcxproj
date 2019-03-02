@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{F62B1EF8-7B1D-4768-B0BE-A691BF61B630}</ProjectGuid>
     <RootNamespace>pingpong</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -73,6 +73,10 @@
     <IncludePath>C:\Users\TOMY\Documents\c++ programiranje\SDL2_ttf-2.0.15\include;C:\Users\TOMY\Documents\c++ programiranje\SDL2_image-2.0.4\include;C:\Users\TOMY\Documents\c++ programiranje\SDL2-2.0.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\TOMY\Documents\c++ programiranje\SDL2_ttf-2.0.15\lib\x86;C:\Users\TOMY\Documents\c++ programiranje\SDL2_image-2.0.4\lib\x86;C:\Users\TOMY\Documents\c++ programiranje\SDL2-2.0.9\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\katarina\Documents\programi\SDL2_ttf-2.0.15\include;C:\Users\katarina\Documents\programi\SDL2_image-2.0.4\include;C:\Users\katarina\Documents\programi\SDL2-2.0.9\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\katarina\Documents\programi\SDL2_ttf-2.0.15\lib\x64;C:\Users\katarina\Documents\programi\SDL2_image-2.0.4\lib\x64;C:\Users\katarina\Documents\programi\SDL2-2.0.9\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -92,6 +96,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

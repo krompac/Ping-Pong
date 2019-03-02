@@ -50,7 +50,7 @@ Game::Game()
 	starting_ball_speed = 5;
 	initialize_game_components();
 	pad_collision_surface = desni_pad.h / 2;
-	koeficijent = (pad_collision_surface / 20) + 0.5;
+	koeficijent = pad_collision_surface / 10; //+ 0.5;
 
 	boja = { 255, 255, 255 };
 
@@ -73,7 +73,6 @@ void Game::initialize_game_components()
 	lijevi_pad = { 20, 20, 20, 100 };
 	desni_pad = { 720, 20, 20, 100 };
 	loptica = { 370, 250, 20, 20 };
-	
 
 	menu_position = message_position = 0;
 	
@@ -169,7 +168,6 @@ void Game::render_options_window()
 
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &options_window);
-
 }
 
 void Game::initialize_message()
@@ -256,10 +254,6 @@ bool Game::kretnja_loptice()
 				if (ball_origin.x + loptica.w / 2 >= game_window.w + game_window.x)
 				{
 					desno = false;
-					speed_y = 0;
-					speed_x = starting_ball_speed;
-					loptica.x = game_window.w;
-					set_origin();
 					lijevi_rezultat++;
 					render_score(&left_score, lijevi_rezultat);
 				}
@@ -269,6 +263,9 @@ bool Game::kretnja_loptice()
 					desno = false;
 					z_desni_pad = desni_pad.y + (desni_pad.h / 2);
 					speed_y = abs(z_desni_pad - ball_origin.y) / koeficijent;
+					cout << "z desni pad = " << z_desni_pad << endl;
+					cout << "ball_origin.y = " << ball_origin.y << endl;
+					cout << "speed_y = " << speed_y << endl;
 					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
 					gore = (z_desni_pad < y);
 				}
@@ -281,15 +278,11 @@ bool Game::kretnja_loptice()
 				if (loptica.x <= game_window.x)
 				{
 					desno = true;
-					speed_y = 0;
-					speed_x = starting_ball_speed;
-					loptica.x = game_window.x;
-					set_origin();
 					desni_rezultat++;
 					render_score(&right_score, desni_rezultat);
 				}
 
-				if ((loptica.x <= (lijevi_pad.x + lijevi_pad.w)) && loptica.y > lijevi_pad.y && loptica.y < (lijevi_pad.y + lijevi_pad.h))
+				if ((ball_origin.x - loptica.w / 2 <= lijevi_pad.x + lijevi_pad.w) && (ball_origin.y - loptica.h / 2) >= lijevi_pad.y && ball_origin.y + loptica.h / 2 <= (lijevi_pad.y + lijevi_pad.h))
 				{
 					desno = true;
 					z_lijevi_pad = lijevi_pad.y + (lijevi_pad.h / 2);

@@ -259,3 +259,12 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/ping_pong/libtiff-5.dll
+/ping_pong/libfreetype-6.dll
+/ping_pong/libjpeg-9.dll
+/ping_pong/SDL2.dll
+/ping_pong/SDL2_image.dll
+/ping_pong/SDL2_ttf.dll
+/ping_pong/libwebp-7.dll
+/ping_pong/libpng16-16.dll
+/ping_pong/zlib1.dll
