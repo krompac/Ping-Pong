@@ -29,6 +29,12 @@ class Game
 		SDL_Texture *answers_textura[2];
 		SDL_Texture *loptica_slika;
 
+		struct
+		{
+			SDL_Texture *speed, *option_1, *option_2, *option_3;
+			SDL_Texture *color, *audio, *barriers, *quantity, *moving;
+		};
+
 		TTF_Font* font;
 		SDL_Color boja;
 		SDL_Surface *povrsina;
@@ -84,7 +90,9 @@ class Game
 		void free_score(SDL_Texture *score);
 		bool message_box_action();
 		bool kretnja_loptice();
+		bool track_rightpad();
 		bool main_loop();
+		bool check_corner(SDL_Rect rect);
 
 	public:
 		Game();

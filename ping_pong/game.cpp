@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <string>
+#include <math.h>
 #include "game.h"
 
 using namespace std;
@@ -33,9 +34,9 @@ Game::Game()
 	scoreboard = { 800, 110, 150, 70 };
 	options = { 800, 200, 150, 70 };
 	quit = { 800, 290, 150, 70 };
-	prvi_broj = { 310, 520, 50, 70 };
-	drugi_broj = { 410, 520, 50, 70 };
-	dvotocka = { 360, 520, 50, 70 };
+	prvi_broj = { 310, 520, 60, 70 };
+	drugi_broj = { 410, 520, 60, 70 };
+	dvotocka = { 375, 520, 30, 70 };
 	
 	message_box = { 180, 190, 400, 150 };
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
@@ -154,7 +155,7 @@ void Game::render_game_window(bool is_message)
 		SDL_RenderCopy(renderer, answers_textura[0], NULL, &answers[0]);
 		SDL_RenderCopy(renderer, answers_textura[1], NULL, &answers[1]);
 	}
-
+	
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 
 	SDL_RenderPresent(renderer);
@@ -239,7 +240,7 @@ bool Game::kretnja_loptice()
 {
 	if (!pause)
 	{
-		int y = loptica.y + loptica.h;
+		int y = loptica.y + loptica.h / 2;
 
 		if (frame_time + 1000 / 60 < SDL_GetTicks())
 		{
@@ -322,6 +323,26 @@ bool Game::kretnja_loptice()
 	return true;
 }
 
+bool Game::track_rightpad()
+{
+	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
+
+	if (!pause)
+	{
+		if (keyboard_state_array[SDL_SCANCODE_UP])
+		{
+			if (desni_pad.y - 1 >= game_window.y)
+				desni_pad.y -= 1;
+		}
+		else if (keyboard_state_array[SDL_SCANCODE_DOWN])
+		{
+			if (desni_pad.y + 1 + desni_pad.h <= game_window.h + game_window.y)
+				desni_pad.y += 1;
+		}
+	}
+	return true;
+}
+
 void Game::menu()
 {
 	
@@ -342,16 +363,6 @@ bool Game::main_loop()
 		{
 			if (lijevi_pad.y + 1 + lijevi_pad.h <= game_window.h + game_window.y)
 				lijevi_pad.y += 1;
-		}
-		else if (keyboard_state_array[SDL_SCANCODE_UP])
-		{
-			if (desni_pad.y - 1 >= game_window.y)
-				desni_pad.y -= 1;
-		}
-		else if (keyboard_state_array[SDL_SCANCODE_DOWN])
-		{
-			if (desni_pad.y + 1 + desni_pad.h <= game_window.h + game_window.y)
-				desni_pad.y += 1;
 		}
 	}
 
@@ -410,6 +421,12 @@ bool Game::main_loop()
 	return true;
 }
 
+bool Game::check_corner(SDL_Rect rect)
+{
+
+	return false;
+}
+
 void Game::init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -450,11 +467,12 @@ void Game::init()
 
 		povrsina = IMG_Load("images/circle.png");
 		loptica_slika = SDL_CreateTextureFromSurface(renderer, povrsina);
-		//SDL_SetTextureColorMod(loptica_slika, 0xff, 0x00, 0x00);
-
+		SDL_SetTextureColorMod(loptica_slika, 0xff, 0x00, 0x00);
+		
+		//SDL_SetTextureAlphaMod(loptica_slika, SDL_ALPHA_OPAQUE);
 		render_game_window();
 
-		while (main_loop());
+		while (main_loop() && track_rightpad());
 	}
 }
 
