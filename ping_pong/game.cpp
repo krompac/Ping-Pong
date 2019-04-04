@@ -8,6 +8,7 @@
 #include <string>
 #include <math.h>
 #include "game.h"
+#include "menu.h"
 
 using namespace std;
 
@@ -15,10 +16,6 @@ Game::Game()
 {
 	this->prozor = nullptr;
 	this->renderer = nullptr;
-	this->start_game_textura = nullptr;
-	this->scoreboard_textura = nullptr;
-	this->options_textura = nullptr;
-	this->quit_textura = nullptr;
 	this->povrsina = nullptr;
 	this->left_score = nullptr;
 	this->right_score = nullptr;
@@ -29,11 +26,7 @@ Game::Game()
 	this->loptica_slika = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
-	options_window = { 20, 20, 720, 560 };
-	start_game = { 800, 20, 150, 70 };
-	scoreboard = { 800, 110, 150, 70 };
-	options = { 800, 200, 150, 70 };
-	quit = { 800, 290, 150, 70 };
+	settings_window = { 20, 20, 720, 560 };
 	prvi_broj = { 310, 520, 60, 70 };
 	drugi_broj = { 410, 520, 60, 70 };
 	dvotocka = { 375, 520, 30, 70 };
@@ -43,10 +36,9 @@ Game::Game()
 	answers[0] = { 250, 280, 100, 50 };
 	answers[1] = { 430, 280, 100, 50 };
 
-	menuitems[0] = start_game;
-	menuitems[1] = scoreboard;
-	menuitems[2] = options;
-	menuitems[3] = quit;
+	menuitems = new SDL_Rect[4];
+
+	menu = Menu(menuitems);
 
 	initialize_game_components();
 	pad_collision_surface = desni_pad.h / 2;
@@ -59,6 +51,7 @@ Game::Game()
 
 Game::~Game()
 {
+	delete menuitems;
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(prozor);
 	TTF_Quit();
@@ -66,7 +59,7 @@ Game::~Game()
 
 void Game::initialize_game_components()
 {
-	starting_ball_speed = 7.6;
+	starting_ball_speed = 5;
 	frame_time = 0;
 	speed_x = starting_ball_speed;
 	speed_y = 0;
@@ -122,6 +115,8 @@ void Game::render_game_window(bool is_message)
 	SDL_RenderDrawRect(renderer, &drugi_broj);
 	SDL_RenderDrawRect(renderer, &dvotocka);
 
+	menu.render_menu(renderer);
+
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &game_window);
 	
@@ -131,10 +126,6 @@ void Game::render_game_window(bool is_message)
 		SDL_RenderDrawRect(renderer, &menuitems[menu_position]);
 	}
 
-	SDL_RenderCopy(renderer, start_game_textura, NULL, &start_game);
-	SDL_RenderCopy(renderer, scoreboard_textura, NULL, &scoreboard);
-	SDL_RenderCopy(renderer, options_textura, NULL, &options);
-	SDL_RenderCopy(renderer, quit_textura, NULL, &quit);
 	SDL_RenderCopy(renderer, dvotocka_textura, NULL, &dvotocka);
 	SDL_RenderCopy(renderer, left_score, NULL, &prvi_broj);
 	SDL_RenderCopy(renderer, right_score, NULL, &drugi_broj);
@@ -161,18 +152,22 @@ void Game::render_game_window(bool is_message)
 	SDL_RenderPresent(renderer);
 }
 
-void Game::render_options_window()
+void Game::render_settings_window()
 {
 	SDL_RenderClear(renderer);
 
-	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
-	SDL_RenderDrawRect(renderer, &options_window);
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
+	SDL_RenderDrawRect(renderer, &settings_window);
+	menu.render_menu(renderer);
+
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+
+	SDL_RenderPresent(renderer);
 }
 
-void Game::initialize_message()
+void Game::initialize_message(string message)
 {
-	message_position = 0;
-	povrsina = TTF_RenderText_Solid(font, "Would you like to start again?", boja);
+	povrsina = TTF_RenderText_Solid(font, message.c_str(), boja);
 	message_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
 	povrsina = TTF_RenderText_Solid(font, "Yes", boja);
 	answers_textura[0] = SDL_CreateTextureFromSurface(renderer, povrsina);
@@ -259,7 +254,8 @@ bool Game::kretnja_loptice()
 					render_score(&left_score, lijevi_rezultat);
 				}
 
-				if ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2  <= (desni_pad.y + desni_pad.h))
+				if (check_corner() || ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2  <= (desni_pad.y + desni_pad.h)))
+				//if ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2 <= (desni_pad.y + desni_pad.h))
 				{
 					desno = false;
 					z_desni_pad = desni_pad.y + (desni_pad.h / 2);
@@ -283,7 +279,7 @@ bool Game::kretnja_loptice()
 					render_score(&right_score, desni_rezultat);
 				}
 
-				if ((ball_origin.x - loptica.w / 2 <= lijevi_pad.x + lijevi_pad.w) && (ball_origin.y - loptica.h / 2) >= lijevi_pad.y && ball_origin.y + loptica.h / 2 <= (lijevi_pad.y + lijevi_pad.h))
+				if (check_corner() || ((ball_origin.x - loptica.w / 2 <= lijevi_pad.x + lijevi_pad.w) && (ball_origin.y - loptica.h / 2) >= lijevi_pad.y && ball_origin.y + loptica.h / 2 <= (lijevi_pad.y + lijevi_pad.h)))
 				{
 					desno = true;
 					z_lijevi_pad = lijevi_pad.y + (lijevi_pad.h / 2);
@@ -343,11 +339,6 @@ bool Game::track_rightpad()
 	return true;
 }
 
-void Game::menu()
-{
-	
-}
-
 bool Game::main_loop()
 {
 	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
@@ -392,12 +383,23 @@ bool Game::main_loop()
 				{
 					if (menu_position == 0)
 					{
-						initialize_message();
+						message_position = 0;
+						initialize_message("Would you like to start again?");
 						while (message_box_action());
+					}
+					else if (menu_position == 2)
+					{
+						render_settings_window();
+						SDL_Delay(10000);
 					}
 					else if (menu_position == 3)
 					{
-						return false;
+						message_position = 1;
+						initialize_message("Are you sure you want to guit the game?");
+						while (message_box_action());
+
+						//vraca message_position jer je pozicija Yes odgovora na 0.-oj poziciji (false), a No je 1.-oj poziciji (true)
+						return message_position;
 					}
 				}
 			}
@@ -421,10 +423,15 @@ bool Game::main_loop()
 	return true;
 }
 
-bool Game::check_corner(SDL_Rect rect)
+bool Game::check_corner()
 {
+	int x_coord = - ball_origin.x;
+	int y_coord = - ball_origin.y;
 
-	return false;
+	x_coord += (desno) ? desni_pad.x : lijevi_pad.x + lijevi_pad.w;
+	y_coord += (desno) ? desni_pad.y : lijevi_pad.y;
+	
+	return ((pow((x_coord), 2) + pow((y_coord), 2)) <= pow(loptica.w / 2, 2)) || ((pow((x_coord), 2) + pow((y_coord + desni_pad.h), 2)) <= pow(loptica.w / 2, 2));
 }
 
 void Game::init()
@@ -452,14 +459,7 @@ void Game::init()
 		}
 		font = TTF_OpenFont("images/Sans.ttf", 100);
 
-		povrsina = TTF_RenderText_Solid(font, "Start game", boja);
-		start_game_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = TTF_RenderText_Solid(font, "Scoreboard", boja);
-		scoreboard_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = TTF_RenderText_Solid(font, "Options", boja);
-		options_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		povrsina = TTF_RenderText_Solid(font, "Quit", boja);
-		quit_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
+		menu.init(povrsina, font, boja, renderer);
 		povrsina = TTF_RenderText_Solid(font, ":", boja);
 		dvotocka_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
 		render_score(&left_score, 0);
@@ -469,7 +469,6 @@ void Game::init()
 		loptica_slika = SDL_CreateTextureFromSurface(renderer, povrsina);
 		SDL_SetTextureColorMod(loptica_slika, 0xff, 0x00, 0x00);
 		
-		//SDL_SetTextureAlphaMod(loptica_slika, SDL_ALPHA_OPAQUE);
 		render_game_window();
 
 		while (main_loop() && track_rightpad());
