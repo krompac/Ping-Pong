@@ -14,22 +14,22 @@ using namespace std;
 
 Game::Game()
 {
-	this->prozor = nullptr;
+	this->window = nullptr;
 	this->renderer = nullptr;
-	this->povrsina = nullptr;
+	this->surface = nullptr;
 	this->left_score = nullptr;
 	this->right_score = nullptr;
-	this->dvotocka_textura = nullptr;
-	this->message_textura = nullptr;
-	this->answers_textura[0] = nullptr;
-	this->answers_textura[1] = nullptr;
-	this->loptica_slika = nullptr;
+	this->colon_texture = nullptr;
+	this->message_texture = nullptr;
+	this->answers_textures[0] = nullptr;
+	this->answers_textures[1] = nullptr;
+	this->ball_picture = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
 	settings_window = { 20, 20, 720, 560 };
-	prvi_broj = { 310, 520, 60, 70 };
-	drugi_broj = { 410, 520, 60, 70 };
-	dvotocka = { 375, 520, 30, 70 };
+	first_number = { 310, 520, 60, 70 };
+	second_number = { 410, 520, 60, 70 };
+	colon = { 375, 520, 30, 70 };
 	
 	message_box = { 180, 190, 400, 150 };
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
@@ -40,43 +40,43 @@ Game::Game()
 
 	menu = Menu(menuitems);
 
-	initialize_game_components();
-	pad_collision_surface = desni_pad.h / 2;
-	koeficijent = pad_collision_surface / 10; //+ 0.5;
+	Initialize_Game_Components();
+	pad_collision_surface = right_pad.h / 2;
+	coefficient = pad_collision_surface / 10; //+ 0.5;
 
-	boja = { 255, 255, 255 };
+	color = { 255, 255, 255 };
 
-	init();
+	Init();
 }
 
 Game::~Game()
 {
 	delete menuitems;
 	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(prozor);
+	SDL_DestroyWindow(window);
 	TTF_Quit();
 }
 
-void Game::initialize_game_components()
+void Game::Initialize_Game_Components()
 {
 	starting_ball_speed = 5;
 	frame_time = 0;
 	speed_x = starting_ball_speed;
 	speed_y = 0;
 
-	lijevi_pad = { 20, 20, 20, 100 };
-	desni_pad = { 720, 20, 20, 100 };
-	loptica = { 370, 250, 20, 20 };
+	left_pad = { 20, 20, 20, 100 };
+	right_pad = { 720, 20, 20, 100 };
+	ball = { 370, 250, 20, 20 };
 
-	lijevi_rezultat = 0;
-	desni_rezultat = 0;
-	broj = to_string(lijevi_rezultat);
+	first_score = 0;
+	second_score = 0;
+	number_text = to_string(first_score);
 
-	desno = gore = true;
+	ball_going_right = ball_going_up = true;
 	pause = false;
 }
 
-void Game::free_score(SDL_Texture *score)
+void Game::Free_Score(SDL_Texture *score)
 {
 	if (score != nullptr)
 	{
@@ -84,38 +84,38 @@ void Game::free_score(SDL_Texture *score)
 		score = nullptr;
 	}
 
-	if (povrsina != nullptr)
+	if (surface != nullptr)
 	{
-		SDL_FreeSurface(povrsina);
-		povrsina = nullptr;
+		SDL_FreeSurface(surface);
+		surface = nullptr;
 	}
 }
 
-void Game::free()
+void Game::Free()
 {
 }
 
-void Game::render_score(SDL_Texture **score, int number)
+void Game::Render_Score(SDL_Texture **score, int number)
 {
-	free_score(*score);
-	broj = to_string(number);
-	povrsina = TTF_RenderText_Solid(font, broj.c_str(), boja);
-	*score = SDL_CreateTextureFromSurface(renderer, povrsina);
+	Free_Score(*score);
+	number_text = to_string(number);
+	surface = TTF_RenderText_Solid(font, number_text.c_str(), color);
+	*score = SDL_CreateTextureFromSurface(renderer, surface);
 }
 
-void Game::render_game_window(bool is_message)
+void Game::Render_Game_Window(bool is_message)
 {
 	SDL_RenderClear(renderer);
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 
-	SDL_RenderFillRect(renderer, &lijevi_pad);
-	SDL_RenderFillRect(renderer, &desni_pad);
+	SDL_RenderFillRect(renderer, &left_pad);
+	SDL_RenderFillRect(renderer, &right_pad);
 
-	SDL_RenderDrawRect(renderer, &prvi_broj);
-	SDL_RenderDrawRect(renderer, &drugi_broj);
-	SDL_RenderDrawRect(renderer, &dvotocka);
+	SDL_RenderDrawRect(renderer, &first_number);
+	SDL_RenderDrawRect(renderer, &second_number);
+	SDL_RenderDrawRect(renderer, &colon);
 
-	menu.render_menu(renderer);
+	menu.Render_Menu(renderer);
 
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &game_window);
@@ -126,10 +126,10 @@ void Game::render_game_window(bool is_message)
 		SDL_RenderDrawRect(renderer, &menuitems[menu_position]);
 	}
 
-	SDL_RenderCopy(renderer, dvotocka_textura, NULL, &dvotocka);
-	SDL_RenderCopy(renderer, left_score, NULL, &prvi_broj);
-	SDL_RenderCopy(renderer, right_score, NULL, &drugi_broj);
-	SDL_RenderCopy(renderer, loptica_slika, NULL, &loptica);
+	SDL_RenderCopy(renderer, colon_texture, NULL, &colon);
+	SDL_RenderCopy(renderer, left_score, NULL, &first_number);
+	SDL_RenderCopy(renderer, right_score, NULL, &second_number);
+	SDL_RenderCopy(renderer, ball_picture, NULL, &ball);
 
 	if (is_message)
 	{
@@ -139,12 +139,12 @@ void Game::render_game_window(bool is_message)
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 		SDL_RenderDrawRect(renderer, &message_box);
 
-		SDL_RenderCopy(renderer, message_textura, NULL, &message);
+		SDL_RenderCopy(renderer, message_texture, NULL, &message);
 
 		SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 		SDL_RenderDrawRect(renderer, &answers[message_position]);
-		SDL_RenderCopy(renderer, answers_textura[0], NULL, &answers[0]);
-		SDL_RenderCopy(renderer, answers_textura[1], NULL, &answers[1]);
+		SDL_RenderCopy(renderer, answers_textures[0], NULL, &answers[0]);
+		SDL_RenderCopy(renderer, answers_textures[1], NULL, &answers[1]);
 	}
 	
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
@@ -152,40 +152,40 @@ void Game::render_game_window(bool is_message)
 	SDL_RenderPresent(renderer);
 }
 
-void Game::render_settings_window()
+void Game::Render_Settings_Window()
 {
 	SDL_RenderClear(renderer);
 
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 	SDL_RenderDrawRect(renderer, &settings_window);
-	menu.render_menu(renderer);
+	menu.Render_Menu(renderer);
 
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 
 	SDL_RenderPresent(renderer);
 }
 
-void Game::initialize_message(string message)
+void Game::Initialize_Message(string message)
 {
-	povrsina = TTF_RenderText_Solid(font, message.c_str(), boja);
-	message_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-	povrsina = TTF_RenderText_Solid(font, "Yes", boja);
-	answers_textura[0] = SDL_CreateTextureFromSurface(renderer, povrsina);
-	povrsina = TTF_RenderText_Solid(font, "No", boja);
-	answers_textura[1] = SDL_CreateTextureFromSurface(renderer, povrsina);
+	surface = TTF_RenderText_Solid(font, message.c_str(), color);
+	message_texture = SDL_CreateTextureFromSurface(renderer, surface);
+	surface = TTF_RenderText_Solid(font, "Yes", color);
+	answers_textures[0] = SDL_CreateTextureFromSurface(renderer, surface);
+	surface = TTF_RenderText_Solid(font, "No", color);
+	answers_textures[1] = SDL_CreateTextureFromSurface(renderer, surface);
 }
 
-bool Game::message_box_action()
+bool Game::Message_Box_Action()
 {
-	render_game_window(true);
+	Render_Game_Window(true);
 
-	while (SDL_PollEvent(&message_dogadjaj))
+	while (SDL_PollEvent(&message_event))
 	{
-		if (message_dogadjaj.type == SDL_QUIT)
+		if (message_event.type == SDL_QUIT)
 			this->~Game();
-		else if (message_dogadjaj.type == SDL_KEYDOWN)
+		else if (message_event.type == SDL_KEYDOWN)
 		{
-			switch (message_dogadjaj.key.keysym.sym)
+			switch (message_event.key.keysym.sym)
 			{
 				case SDLK_LEFT:
 					if (message_position)
@@ -200,118 +200,118 @@ bool Game::message_box_action()
 					}
 					break;
 				case SDLK_SPACE:
-					if (!message_position)
+					if (!message_position && menu_position == 0)
 					{
-						initialize_game_components();
-						render_score(&left_score, 0);
-						render_score(&right_score, 0);
+						Initialize_Game_Components();
+						Render_Score(&left_score, 0);
+						Render_Score(&right_score, 0);
 					}
 
 					pause = false;
-					render_game_window();
+					Render_Game_Window();
 					SDL_Delay(500);
 					return false;
 			}
 		}
 
-		render_game_window(true);
+		Render_Game_Window(true);
 		SDL_Delay(1);
 
 		return true;
 	}
 
-	render_game_window(true);
+	Render_Game_Window(true);
 	SDL_Delay(1);
 
 	return true;
 }
 
-void Game::set_origin()
+void Game::Set_Origin()
 {
-	ball_origin = { loptica.x + loptica.w / 2, loptica.y + loptica.h / 2 };
+	ball_origin = { ball.x + ball.w / 2, ball.y + ball.h / 2 };
 }
 
-bool Game::kretnja_loptice()
+bool Game::Ball_Movement()
 {
 	if (!pause)
 	{
-		int y = loptica.y + loptica.h / 2;
+		int y = ball.y + ball.h / 2;
 
 		if (frame_time + 1000 / 60 < SDL_GetTicks())
 		{
 			frame_time = SDL_GetTicks();
-			if (desno)
+			if (ball_going_right)
 			{
-				loptica.x += speed_x;
-				set_origin();
+				ball.x += speed_x;
+				Set_Origin();
 
-				if (ball_origin.x + loptica.w / 2 >= game_window.w + game_window.x)
+				if (ball_origin.x + ball.w / 2 >= game_window.w + game_window.x)
 				{
-					loptica.x = game_window.x + game_window.w - loptica.w;
-					set_origin();
-					desno = false;
-					lijevi_rezultat++;
-					render_score(&left_score, lijevi_rezultat);
+					ball.x = game_window.x + game_window.w - ball.w;
+					Set_Origin();
+					ball_going_right = false;
+					first_score++;
+					Render_Score(&left_score, first_score);
 				}
 
-				if (check_corner() || ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2  <= (desni_pad.y + desni_pad.h)))
+				if (Check_Corner() || ((ball_origin.x + ball.w / 2 >= right_pad.x) && (ball_origin.y - ball.h / 2) >= right_pad.y && ball_origin.y + ball.h / 2  <= (right_pad.y + right_pad.h)))
 				//if ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2 <= (desni_pad.y + desni_pad.h))
 				{
-					desno = false;
-					z_desni_pad = desni_pad.y + (desni_pad.h / 2);
-					speed_y = abs(z_desni_pad - ball_origin.y) / koeficijent;
+					ball_going_right = false;
+					z_right_pad = right_pad.y + (right_pad.h / 2);
+					speed_y = abs(z_right_pad - ball_origin.y) / coefficient;
 					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
-					gore = (z_desni_pad < y);
+					ball_going_up = (z_right_pad < y);
 					starting_ball_speed += 0.2;
 				}
 			}
 			else
 			{
-				loptica.x -= speed_x;
-				set_origin();
+				ball.x -= speed_x;
+				Set_Origin();
 
-				if (loptica.x <= game_window.x)
+				if (ball.x <= game_window.x)
 				{
-					loptica.x = game_window.x;
-					set_origin();
-					desno = true;
-					desni_rezultat++;
-					render_score(&right_score, desni_rezultat);
+					ball.x = game_window.x;
+					Set_Origin();
+					ball_going_right = true;
+					second_score++;
+					Render_Score(&right_score, second_score);
 				}
 
-				if (check_corner() || ((ball_origin.x - loptica.w / 2 <= lijevi_pad.x + lijevi_pad.w) && (ball_origin.y - loptica.h / 2) >= lijevi_pad.y && ball_origin.y + loptica.h / 2 <= (lijevi_pad.y + lijevi_pad.h)))
+				if (Check_Corner() || ((ball_origin.x - ball.w / 2 <= left_pad.x + left_pad.w) && (ball_origin.y - ball.h / 2) >= left_pad.y && ball_origin.y + ball.h / 2 <= (left_pad.y + left_pad.h)))
 				{
-					desno = true;
-					z_lijevi_pad = lijevi_pad.y + (lijevi_pad.h / 2);
-					speed_y = abs(z_lijevi_pad - y) / koeficijent;
+					ball_going_right = true;
+					z_left_pad = left_pad.y + (left_pad.h / 2);
+					speed_y = abs(z_left_pad - y) / coefficient;
 					speed_x = starting_ball_speed + 1 - (speed_y / starting_ball_speed);
-					gore = (z_lijevi_pad < y);
+					ball_going_up = (z_left_pad < y);
 					starting_ball_speed += 0.2;
 				}
 			}
 
-			if (gore)
+			if (ball_going_up)
 			{
-				loptica.y += speed_y;
-				set_origin();
+				ball.y += speed_y;
+				Set_Origin();
 
-				if (loptica.y + loptica.h >= game_window.h + game_window.y)
+				if (ball.y + ball.h >= game_window.h + game_window.y)
 				{
-					gore = false;
-					loptica.y = game_window.h;
-					set_origin();
+					ball_going_up = false;
+					ball.y = game_window.h;
+					Set_Origin();
 				}
 			}
 			else
 			{
-				loptica.y -= speed_y;
-				set_origin();
+				ball.y -= speed_y;
+				Set_Origin();
 
-				if (loptica.y <= game_window.y)
+				if (ball.y <= game_window.y)
 				{
-					gore = true;
-					loptica.y = game_window.y;
-					set_origin();
+					ball_going_up = true;
+					ball.y = game_window.y;
+					Set_Origin();
 				}
 			}
 		}
@@ -319,7 +319,7 @@ bool Game::kretnja_loptice()
 	return true;
 }
 
-bool Game::track_rightpad()
+bool Game::Track_Rightpad()
 {
 	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
 
@@ -327,19 +327,19 @@ bool Game::track_rightpad()
 	{
 		if (keyboard_state_array[SDL_SCANCODE_UP])
 		{
-			if (desni_pad.y - 1 >= game_window.y)
-				desni_pad.y -= 1;
+			if (right_pad.y - 1 >= game_window.y)
+				right_pad.y -= 1;
 		}
 		else if (keyboard_state_array[SDL_SCANCODE_DOWN])
 		{
-			if (desni_pad.y + 1 + desni_pad.h <= game_window.h + game_window.y)
-				desni_pad.y += 1;
+			if (right_pad.y + 1 + right_pad.h <= game_window.h + game_window.y)
+				right_pad.y += 1;
 		}
 	}
 	return true;
 }
 
-bool Game::main_loop()
+bool Game::Main_Loop()
 {
 	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
 
@@ -347,56 +347,56 @@ bool Game::main_loop()
 	{
 		if (keyboard_state_array[SDL_SCANCODE_W])
 		{
-			if (lijevi_pad.y - 1 >= game_window.y)
-				lijevi_pad.y -= 1;
+			if (left_pad.y - 1 >= game_window.y)
+				left_pad.y -= 1;
 		}
 		else if (keyboard_state_array[SDL_SCANCODE_S])
 		{
-			if (lijevi_pad.y + 1 + lijevi_pad.h <= game_window.h + game_window.y)
-				lijevi_pad.y += 1;
+			if (left_pad.y + 1 + left_pad.h <= game_window.h + game_window.y)
+				left_pad.y += 1;
 		}
 	}
 
-	while (SDL_PollEvent(&dogadjaj))
+	while (SDL_PollEvent(&event_handler))
 	{
-		if (dogadjaj.type == SDL_QUIT)
+		if (event_handler.type == SDL_QUIT)
 			return false;
-		else if (dogadjaj.type == SDL_KEYDOWN)
+		else if (event_handler.type == SDL_KEYDOWN)
 		{
 			if (pause)
 			{
-				if (dogadjaj.key.keysym.sym == SDLK_UP || dogadjaj.key.keysym.sym == SDLK_w)
+				if (event_handler.key.keysym.sym == SDLK_UP || event_handler.key.keysym.sym == SDLK_w)
 				{
 					if (menu_position > 0)
 					{
 						menu_position--;
 					}
 				}
-				else if (dogadjaj.key.keysym.sym == SDLK_DOWN || dogadjaj.key.keysym.sym == SDLK_s)
+				else if (event_handler.key.keysym.sym == SDLK_DOWN || event_handler.key.keysym.sym == SDLK_s)
 				{
 					if (menu_position < 3)
 					{
 						menu_position++;
 					}
 				}
-				else if (dogadjaj.key.keysym.sym == SDLK_SPACE)
+				else if (event_handler.key.keysym.sym == SDLK_SPACE)
 				{
 					if (menu_position == 0)
 					{
 						message_position = 0;
-						initialize_message("Would you like to start again?");
-						while (message_box_action());
+						Initialize_Message("Would you like to start again?");
+						while (Message_Box_Action());
 					}
 					else if (menu_position == 2)
 					{
-						render_settings_window();
+						Render_Settings_Window();
 						SDL_Delay(10000);
 					}
 					else if (menu_position == 3)
 					{
 						message_position = 1;
-						initialize_message("Are you sure you want to guit the game?");
-						while (message_box_action());
+						Initialize_Message("Are you sure you want to guit the game?");
+						while (Message_Box_Action());
 
 						//vraca message_position jer je pozicija Yes odgovora na 0.-oj poziciji (false), a No je 1.-oj poziciji (true)
 						return message_position;
@@ -404,37 +404,37 @@ bool Game::main_loop()
 				}
 			}
 
-			switch (dogadjaj.key.keysym.sym)
-				case SDLK_ESCAPE:
-					pause = !pause;
-					break;
+			if (event_handler.key.keysym.sym == SDLK_ESCAPE)
+			{
+				pause = !pause;
+			}
 
-			kretnja_loptice();
-			render_game_window();
+			Ball_Movement();
+			Render_Game_Window();
 
 			return true;
 		}
 	}
 
-	kretnja_loptice();
-	render_game_window();
+	Ball_Movement();
+	Render_Game_Window();
 	SDL_Delay(1);
 
 	return true;
 }
 
-bool Game::check_corner()
+bool Game::Check_Corner()
 {
 	int x_coord = - ball_origin.x;
 	int y_coord = - ball_origin.y;
 
-	x_coord += (desno) ? desni_pad.x : lijevi_pad.x + lijevi_pad.w;
-	y_coord += (desno) ? desni_pad.y : lijevi_pad.y;
+	x_coord += (ball_going_right) ? right_pad.x : left_pad.x + left_pad.w;
+	y_coord += (ball_going_right) ? right_pad.y : left_pad.y;
 	
-	return ((pow((x_coord), 2) + pow((y_coord), 2)) <= pow(loptica.w / 2, 2)) || ((pow((x_coord), 2) + pow((y_coord + desni_pad.h), 2)) <= pow(loptica.w / 2, 2));
+	return ((pow((x_coord), 2) + pow((y_coord), 2)) <= pow(ball.w / 2, 2)) || ((pow((x_coord), 2) + pow((y_coord + right_pad.h), 2)) <= pow(ball.w / 2, 2));
 }
 
-void Game::init()
+void Game::Init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -442,7 +442,7 @@ void Game::init()
 	}
 	else
 	{
-		if (SDL_CreateWindowAndRenderer(sirina, visina, SDL_WINDOW_SHOWN, &prozor, &renderer))
+		if (SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, SDL_WINDOW_SHOWN, &window, &renderer))
 		{
 			cout << "Greška kod pravljenja prozora i/ili renderera!\nError: " << SDL_GetError() << endl;
 		}
@@ -459,19 +459,19 @@ void Game::init()
 		}
 		font = TTF_OpenFont("images/Sans.ttf", 100);
 
-		menu.init(povrsina, font, boja, renderer);
-		povrsina = TTF_RenderText_Solid(font, ":", boja);
-		dvotocka_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-		render_score(&left_score, 0);
-		render_score(&right_score, 0);
+		menu.Init(surface, font, color, renderer);
+		surface = TTF_RenderText_Solid(font, ":", color);
+		colon_texture = SDL_CreateTextureFromSurface(renderer, surface);
+		Render_Score(&left_score, 0);
+		Render_Score(&right_score, 0);
 
-		povrsina = IMG_Load("images/circle.png");
-		loptica_slika = SDL_CreateTextureFromSurface(renderer, povrsina);
-		SDL_SetTextureColorMod(loptica_slika, 0xff, 0x00, 0x00);
+		surface = IMG_Load("images/circle.png");
+		ball_picture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_SetTextureColorMod(ball_picture, 0xff, 0x00, 0x00);
 		
-		render_game_window();
+		Render_Game_Window();
 
-		while (main_loop() && track_rightpad());
+		while (Main_Loop() && Track_Rightpad());
 	}
 }
 

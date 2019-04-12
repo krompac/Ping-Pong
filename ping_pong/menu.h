@@ -13,17 +13,17 @@ class Menu
 		SDL_Rect options;
 		SDL_Rect quit;
 
-		SDL_Texture *start_game_textura;
-		SDL_Texture *scoreboard_textura;
-		SDL_Texture *options_textura;
-		SDL_Texture *quit_textura;
+		SDL_Texture *start_game_texture;
+		SDL_Texture *scoreboard_texture;
+		SDL_Texture *options_texture;
+		SDL_Texture *quit_texture;
 
 	public:
 		Menu();
 		Menu(SDL_Rect *menuitems);
 		~Menu();
 
-		void render_menu(SDL_Renderer *renderer);
-		void init(SDL_Surface *povrsina, TTF_Font *font, SDL_Color &boja, SDL_Renderer *renderer);
+		void Render_Menu(SDL_Renderer *renderer);
+		void Init(SDL_Surface *surface, TTF_Font *font, SDL_Color &color, SDL_Renderer *renderer);
 };
 

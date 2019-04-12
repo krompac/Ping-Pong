@@ -20,37 +20,37 @@ Menu::Menu(SDL_Rect *menuitems)
 	menuitems[2] = options;
 	menuitems[3] = quit;
 
-	this->start_game_textura = nullptr;
-	this->scoreboard_textura = nullptr;
-	this->options_textura = nullptr;
-	this->quit_textura = nullptr;
+	this->start_game_texture = nullptr;
+	this->scoreboard_texture = nullptr;
+	this->options_texture = nullptr;
+	this->quit_texture = nullptr;
 }
 
 
 Menu::~Menu()
 {
-	SDL_DestroyTexture(start_game_textura);
-	SDL_DestroyTexture(scoreboard_textura);
-	SDL_DestroyTexture(options_textura);
-	SDL_DestroyTexture(quit_textura);
+	SDL_DestroyTexture(start_game_texture);
+	SDL_DestroyTexture(scoreboard_texture);
+	SDL_DestroyTexture(options_texture);
+	SDL_DestroyTexture(quit_texture);
 }
 
-void Menu::render_menu(SDL_Renderer *renderer)
+void Menu::Render_Menu(SDL_Renderer *renderer)
 {
-	SDL_RenderCopy(renderer, start_game_textura, NULL, &start_game);
-	SDL_RenderCopy(renderer, scoreboard_textura, NULL, &scoreboard);
-	SDL_RenderCopy(renderer, options_textura, NULL, &options);
-	SDL_RenderCopy(renderer, quit_textura, NULL, &quit);
+	SDL_RenderCopy(renderer, start_game_texture, NULL, &start_game);
+	SDL_RenderCopy(renderer, scoreboard_texture, NULL, &scoreboard);
+	SDL_RenderCopy(renderer, options_texture, NULL, &options);
+	SDL_RenderCopy(renderer, quit_texture, NULL, &quit);
 }
 
-void Menu::init(SDL_Surface *povrsina, TTF_Font *font, SDL_Color &boja, SDL_Renderer *renderer)
+void Menu::Init(SDL_Surface *surface, TTF_Font *font, SDL_Color &color, SDL_Renderer *renderer)
 {
-	povrsina = TTF_RenderText_Solid(font, "Start game", boja);
-	start_game_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-	povrsina = TTF_RenderText_Solid(font, "Scoreboard", boja);
-	scoreboard_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-	povrsina = TTF_RenderText_Solid(font, "Options", boja);
-	options_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
-	povrsina = TTF_RenderText_Solid(font, "Quit", boja);
-	quit_textura = SDL_CreateTextureFromSurface(renderer, povrsina);
+	surface = TTF_RenderText_Solid(font, "Start game", color);
+	start_game_texture = SDL_CreateTextureFromSurface(renderer, surface);
+	surface = TTF_RenderText_Solid(font, "Scoreboard", color);
+	scoreboard_texture = SDL_CreateTextureFromSurface(renderer, surface);
+	surface = TTF_RenderText_Solid(font, "Options", color);
+	options_texture = SDL_CreateTextureFromSurface(renderer, surface);
+	surface = TTF_RenderText_Solid(font, "Quit", color);
+	quit_texture = SDL_CreateTextureFromSurface(renderer, surface);
 }
