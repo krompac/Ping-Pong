@@ -26,7 +26,7 @@ Game::Game()
 	this->ball_picture = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
-	settings_window = { 20, 20, 720, 560 };
+	//settings_window = { 20, 20, 720, 560 };
 	first_number = { 310, 520, 60, 70 };
 	second_number = { 410, 520, 60, 70 };
 	colon = { 375, 520, 30, 70 };
@@ -39,6 +39,7 @@ Game::Game()
 	menuitems = new SDL_Rect[4];
 
 	menu = Menu(menuitems);
+	settings_window = Settings(menu);
 
 	Initialize_Game_Components();
 	pad_collision_surface = right_pad.h / 2;
@@ -152,18 +153,18 @@ void Game::Render_Game_Window(bool is_message)
 	SDL_RenderPresent(renderer);
 }
 
-void Game::Render_Settings_Window()
-{
-	SDL_RenderClear(renderer);
-
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
-	SDL_RenderDrawRect(renderer, &settings_window);
-	menu.Render_Menu(renderer);
-
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
-
-	SDL_RenderPresent(renderer);
-}
+//void Game::Render_Settings_Window(bool is_message = false)
+//{
+//	SDL_RenderClear(renderer);
+//
+//	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
+//	SDL_RenderDrawRect(renderer, &settings_window);
+//	menu.Render_Menu(renderer);
+//
+//	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+//
+//	SDL_RenderPresent(renderer);
+//}
 
 void Game::Initialize_Message(string message)
 {
@@ -389,8 +390,10 @@ bool Game::Main_Loop()
 					}
 					else if (menu_position == 2)
 					{
-						Render_Settings_Window();
-						SDL_Delay(10000);
+						do
+						{
+							settings_window.Render(renderer);
+						} while (settings_window.Window_Action(renderer));
 					}
 					else if (menu_position == 3)
 					{
@@ -434,6 +437,19 @@ bool Game::Check_Corner()
 	return ((pow((x_coord), 2) + pow((y_coord), 2)) <= pow(ball.w / 2, 2)) || ((pow((x_coord), 2) + pow((y_coord + right_pad.h), 2)) <= pow(ball.w / 2, 2));
 }
 
+bool Game::Settings_Window_Action()
+{
+	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
+
+	if (pause)
+	{
+
+	}
+
+
+	return true;
+}
+
 void Game::Init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -458,8 +474,10 @@ void Game::Init()
 			cout << "Greska kod TTF inita!\n";
 		}
 		font = TTF_OpenFont("images/Sans.ttf", 100);
-
+		
+		settings_window.Init_Textures(renderer, font);
 		menu.Init(surface, font, color, renderer);
+
 		surface = TTF_RenderText_Solid(font, ":", color);
 		colon_texture = SDL_CreateTextureFromSurface(renderer, surface);
 		Render_Score(&left_score, 0);

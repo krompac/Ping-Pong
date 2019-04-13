@@ -4,6 +4,7 @@
 #include <SDL_ttf.h>
 #include <string>
 #include "menu.h"
+#include "settings.h"
 #undef main
 
 class Game
@@ -17,7 +18,7 @@ class Game
 		SDL_Rect right_pad;
 		SDL_Rect ball;
 		SDL_Rect game_window;
-		SDL_Rect settings_window;
+		//SDL_Rect settings_window;
 
 		SDL_Texture *left_score;
 		SDL_Texture *right_score;
@@ -39,6 +40,7 @@ class Game
 		SDL_Rect *menuitems;
 
 		Menu menu;
+		Settings settings_window;
 
 		struct 
 		{
@@ -75,7 +77,7 @@ class Game
 		void Init();
 		void Render_Game_Window(bool is_message = false);
 		void Render_Score(SDL_Texture **score, int number);
-		void Render_Settings_Window();
+		//void Render_Settings_Window(bool is_message = false);
 		void Initialize_Message(std::string message);
 		void Initialize_Game_Components();
 		void Free();
@@ -86,6 +88,7 @@ class Game
 		bool Track_Rightpad();
 		bool Main_Loop();
 		bool Check_Corner();
+		bool Settings_Window_Action();
 
 	public:
 		Game();
