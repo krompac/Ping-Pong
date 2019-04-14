@@ -6,9 +6,10 @@
 #include <string>
 #include "Window.h"
 #include "menu.h"
+#include "Options.h"
 #undef main
 
-class Settings : Window
+class Settings : public Window
 {
 	private:
 		SDL_Surface *surface;
@@ -27,15 +28,13 @@ class Settings : Window
 		SDL_Color color;
 
 		Menu *menu;
-
-		std::string possible_speed[3];
-		int array_index;
+		Options *options;
 
 		void SetTexture(SDL_Texture **texture, SDL_Renderer *renderer, std::string text, TTF_Font *font = nullptr);
 
 	public:
 		Settings();
-		Settings(Menu &menu);
+		Settings(Menu &menu, SpeedOptions &speed_options);
 		~Settings();
 
 		void Render(SDL_Renderer *renderer);

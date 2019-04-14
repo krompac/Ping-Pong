@@ -137,11 +137,14 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="Options.cpp" />
     <ClCompile Include="settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="Options.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -159,6 +162,9 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="images\Sans.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ping_pong.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

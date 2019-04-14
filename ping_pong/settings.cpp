@@ -2,8 +2,10 @@
 
 Settings::Settings() {}
 
-Settings::Settings(Menu &menu)
+Settings::Settings(Menu &menu, SpeedOptions &speed_options)
 {
+	this->options = &speed_options;
+	//this->options = new SpeedOptions();
 	this->menu = &menu;
 	this->surface = nullptr;
 	render_window = { 20, 20, 720, 560 };
@@ -22,17 +24,13 @@ Settings::Settings(Menu &menu)
 	this->left_arrow_head_texture = nullptr;
 	this->right_arrow_head_texture = nullptr;
 
-	possible_speed[0] = "  Slow  ";
-	possible_speed[1] = " Normal ";
-	possible_speed[2] = "  Fast  ";
-
-	array_index = 1;
-
 	color = { 255, 255, 255 };
 }
 
 Settings::~Settings()
 {
+	//delete options;
+
 	SDL_FreeSurface(surface);
 	SDL_DestroyTexture(ball_speed_text);
 	SDL_DestroyTexture(ball_speed_text_label);
@@ -73,22 +71,20 @@ bool Settings::Window_Action(SDL_Renderer *renderer, bool is_message)
 		{
 			switch (event_handler.key.keysym.sym)
 			{
-			case SDLK_ESCAPE:
-				return false;
-			case SDLK_LEFT:
-				if (array_index != 0)
-				{
-					array_index--;
-					SetTexture(&ball_speed_text, renderer, possible_speed[array_index], TTF_OpenFont("images/Sans.ttf", 100));
-				}
-				break;
-			case SDLK_RIGHT:
-				if (array_index != 2)
-				{
-					array_index++;
-					SetTexture(&ball_speed_text, renderer, possible_speed[array_index], TTF_OpenFont("images/Sans.ttf", 100));
-				}
-				break;
+				case SDLK_ESCAPE:
+					return false;
+				case SDLK_LEFT:
+					if (this->options->UpdateOptions(-1))
+					{
+						SetTexture(&ball_speed_text, renderer, this->options->GetOption(), TTF_OpenFont("images/Sans.ttf", 100));
+					}
+					break;
+				case SDLK_RIGHT:
+					if (this->options->UpdateOptions(1))
+					{
+						SetTexture(&ball_speed_text, renderer, this->options->GetOption(), TTF_OpenFont("images/Sans.ttf", 100));
+					}
+					break;
 			}
 		}
 	}
@@ -101,7 +97,7 @@ void Settings::Init_Textures(SDL_Renderer *renderer, TTF_Font *font)
 	SetTexture(&left_arrow_head_texture, renderer, "images/left_arrow_head.png");
 	SetTexture(&right_arrow_head_texture, renderer, "images/right_arrow_head.png");
 
-	SetTexture(&ball_speed_text, renderer, possible_speed[array_index], font);
+	SetTexture(&ball_speed_text, renderer, this->options->GetOption(), font);
 	SetTexture(&ball_speed_text_label, renderer, "Ball speed:", font);
 }
 

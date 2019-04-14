@@ -26,7 +26,6 @@ Game::Game()
 	this->ball_picture = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
-	//settings_window = { 20, 20, 720, 560 };
 	first_number = { 310, 520, 60, 70 };
 	second_number = { 410, 520, 60, 70 };
 	colon = { 375, 520, 30, 70 };
@@ -39,7 +38,9 @@ Game::Game()
 	menuitems = new SDL_Rect[4];
 
 	menu = Menu(menuitems);
-	settings_window = Settings(menu);
+
+	speed_options = SpeedOptions();
+	settings_window = Settings(menu, speed_options);
 
 	Initialize_Game_Components();
 	pad_collision_surface = right_pad.h / 2;
@@ -60,7 +61,8 @@ Game::~Game()
 
 void Game::Initialize_Game_Components()
 {
-	starting_ball_speed = 5;
+	starting_ball_speed = speed_options.GetBallSpeed();
+	//starting_ball_speed = 5;
 	frame_time = 0;
 	speed_x = starting_ball_speed;
 	speed_y = 0;
@@ -121,7 +123,6 @@ void Game::Render_Game_Window(bool is_message)
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &game_window);
 	
-
 	if (pause)
 	{
 		SDL_RenderDrawRect(renderer, &menuitems[menu_position]);
@@ -152,19 +153,6 @@ void Game::Render_Game_Window(bool is_message)
 
 	SDL_RenderPresent(renderer);
 }
-
-//void Game::Render_Settings_Window(bool is_message = false)
-//{
-//	SDL_RenderClear(renderer);
-//
-//	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
-//	SDL_RenderDrawRect(renderer, &settings_window);
-//	menu.Render_Menu(renderer);
-//
-//	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
-//
-//	SDL_RenderPresent(renderer);
-//}
 
 void Game::Initialize_Message(string message)
 {
@@ -256,7 +244,6 @@ bool Game::Ball_Movement()
 				}
 
 				if (Check_Corner() || ((ball_origin.x + ball.w / 2 >= right_pad.x) && (ball_origin.y - ball.h / 2) >= right_pad.y && ball_origin.y + ball.h / 2  <= (right_pad.y + right_pad.h)))
-				//if ((ball_origin.x + loptica.w / 2 >= desni_pad.x) && (ball_origin.y - loptica.h / 2) >= desni_pad.y && ball_origin.y + loptica.h / 2 <= (desni_pad.y + desni_pad.h))
 				{
 					ball_going_right = false;
 					z_right_pad = right_pad.y + (right_pad.h / 2);
