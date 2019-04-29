@@ -1,6 +1,8 @@
 #include "Options.h"
 
-SpeedOptions::SpeedOptions()
+SpeedOptions::SpeedOptions() {}
+
+SpeedOptions::SpeedOptions(float &speed)
 {
 	possible_speed = new std::string[3];
 
@@ -9,7 +11,8 @@ SpeedOptions::SpeedOptions()
 	possible_speed[2] = "  Fast  ";
 
 	array_index = 1;
-	ball_speed = 5;
+	ball_speed = &speed;
+	*ball_speed = 5;
 }
 
 SpeedOptions::~SpeedOptions()
@@ -22,13 +25,13 @@ bool SpeedOptions::UpdateOptions(int change_index)
 	if (change_index > 0 && array_index != 2)
 	{
 		array_index++;
-		ball_speed += 2;
+		*ball_speed += 2;
 		return true;
 	}
 	else if (change_index < 0 && array_index != 0)
 	{
 		array_index--;
-		ball_speed -= 2;
+		*ball_speed -= 2;
 		return true;
 	}
 
@@ -38,9 +41,4 @@ bool SpeedOptions::UpdateOptions(int change_index)
 std::string SpeedOptions::GetOption()
 {
 	return possible_speed[array_index];
-}
-
-int SpeedOptions::GetBallSpeed()
-{
-	return this->ball_speed;
 }

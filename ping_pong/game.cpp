@@ -39,7 +39,7 @@ Game::Game()
 
 	menu = Menu(menuitems);
 
-	speed_options = SpeedOptions();
+	speed_options = SpeedOptions(starting_ball_speed);
 	settings_window = Settings(menu, speed_options);
 
 	Initialize_Game_Components();
@@ -61,7 +61,6 @@ Game::~Game()
 
 void Game::Initialize_Game_Components()
 {
-	starting_ball_speed = speed_options.GetBallSpeed();
 	//starting_ball_speed = 5;
 	frame_time = 0;
 	speed_x = starting_ball_speed;
@@ -215,7 +214,7 @@ bool Game::Message_Box_Action()
 	return true;
 }
 
-void Game::Set_Origin()
+void Game::Update_Ball_Origin()
 {
 	ball_origin = { ball.x + ball.w / 2, ball.y + ball.h / 2 };
 }
@@ -232,12 +231,12 @@ bool Game::Ball_Movement()
 			if (ball_going_right)
 			{
 				ball.x += speed_x;
-				Set_Origin();
+				Update_Ball_Origin();
 
 				if (ball_origin.x + ball.w / 2 >= game_window.w + game_window.x)
 				{
 					ball.x = game_window.x + game_window.w - ball.w;
-					Set_Origin();
+					Update_Ball_Origin();
 					ball_going_right = false;
 					first_score++;
 					Render_Score(&left_score, first_score);
@@ -256,12 +255,12 @@ bool Game::Ball_Movement()
 			else
 			{
 				ball.x -= speed_x;
-				Set_Origin();
+				Update_Ball_Origin();
 
 				if (ball.x <= game_window.x)
 				{
 					ball.x = game_window.x;
-					Set_Origin();
+					Update_Ball_Origin();
 					ball_going_right = true;
 					second_score++;
 					Render_Score(&right_score, second_score);
@@ -281,25 +280,25 @@ bool Game::Ball_Movement()
 			if (ball_going_up)
 			{
 				ball.y += speed_y;
-				Set_Origin();
+				Update_Ball_Origin();
 
 				if (ball.y + ball.h >= game_window.h + game_window.y)
 				{
 					ball_going_up = false;
 					ball.y = game_window.h;
-					Set_Origin();
+					Update_Ball_Origin();
 				}
 			}
 			else
 			{
 				ball.y -= speed_y;
-				Set_Origin();
+				Update_Ball_Origin();
 
 				if (ball.y <= game_window.y)
 				{
 					ball_going_up = true;
 					ball.y = game_window.y;
-					Set_Origin();
+					Update_Ball_Origin();
 				}
 			}
 		}

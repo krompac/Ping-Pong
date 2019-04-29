@@ -81,7 +81,7 @@ class Game
 		void Initialize_Message(std::string message);
 		void Initialize_Game_Components();
 		void Free();
-		void Set_Origin();
+		void Update_Ball_Origin();
 		void Free_Score(SDL_Texture *score);
 		bool Message_Box_Action();
 		bool Ball_Movement();

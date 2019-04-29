@@ -18,13 +18,13 @@ class SpeedOptions : public Options
 	private:
 		std::string *possible_speed;
 		int array_index;
-		int ball_speed;
+		float *ball_speed;
 	
 	public:
 		SpeedOptions();
+		SpeedOptions(float &speed);
 		~SpeedOptions();
 	
 		bool UpdateOptions(int change_index = 0);
 		std::string GetOption();
-		int GetBallSpeed();
 };
