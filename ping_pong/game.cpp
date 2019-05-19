@@ -376,10 +376,12 @@ bool Game::Main_Loop()
 					}
 					else if (menu_position == 2)
 					{
+						settings_window.Init_Textures(&renderer, font);
 						do
 						{
-							settings_window.Render(renderer);
-						} while (settings_window.Window_Action(renderer));
+							settings_window.Render(&renderer);
+						} while (settings_window.Window_Action(&renderer));
+						settings_window.FreeData();
 					}
 					else if (menu_position == 3)
 					{
@@ -461,7 +463,6 @@ void Game::Init()
 		}
 		font = TTF_OpenFont("images/Sans.ttf", 100);
 		
-		settings_window.Init_Textures(renderer, font);
 		menu.Init(surface, font, color, renderer);
 
 		surface = TTF_RenderText_Solid(font, ":", color);

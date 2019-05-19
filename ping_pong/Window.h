@@ -8,7 +8,7 @@
 class Window
 {
 	public:
-		virtual bool Window_Action(SDL_Renderer *renderer, bool is_message = false) = 0;
+		virtual bool Window_Action(SDL_Renderer **renderer, bool is_message = false) = 0;
 
 	protected:
 		SDL_Rect render_window;

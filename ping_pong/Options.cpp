@@ -1,44 +1,22 @@
 #include "Options.h"
 
-SpeedOptions::SpeedOptions() {}
-
-SpeedOptions::SpeedOptions(float &speed)
+Options::Options()
 {
-	possible_speed = new std::string[3];
-
-	possible_speed[0] = "  Slow  ";
-	possible_speed[1] = " Normal ";
-	possible_speed[2] = "  Fast  ";
-
-	array_index = 1;
-	ball_speed = &speed;
-	*ball_speed = 5;
+	this->surface = nullptr;
+	color = { 255, 255, 255 };
 }
 
-SpeedOptions::~SpeedOptions()
+void Options::SetTexture(SDL_Texture **texture, SDL_Renderer **renderer, std::string text, TTF_Font *font)
 {
-	//delete possible_speed;
-}
-
-bool SpeedOptions::UpdateOptions(int change_index)
-{
-	if (change_index > 0 && array_index != 2)
+	if (font == nullptr)
 	{
-		array_index++;
-		*ball_speed += 2;
-		return true;
+		surface = IMG_Load(text.c_str());
+		*texture = SDL_CreateTextureFromSurface(*renderer, surface);
+		SDL_SetTextureColorMod(*texture, 0xff, 0x00, 0x00);
 	}
-	else if (change_index < 0 && array_index != 0)
+	else
 	{
-		array_index--;
-		*ball_speed -= 2;
-		return true;
+		surface = TTF_RenderText_Solid(font, text.c_str(), color);
+		*texture = SDL_CreateTextureFromSurface(*renderer, surface);
 	}
-
-	return false;
-}
-
-std::string SpeedOptions::GetOption()
-{
-	return possible_speed[array_index];
 }
