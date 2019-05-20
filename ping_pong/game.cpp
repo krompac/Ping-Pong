@@ -34,13 +34,15 @@ Game::Game()
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
 	answers[0] = { 250, 280, 100, 50 };
 	answers[1] = { 430, 280, 100, 50 };
+	max_score = 5;
 
 	menuitems = new SDL_Rect[4];
 
 	menu = Menu(menuitems);
 
 	speed_options = SpeedOptions(starting_ball_speed);
-	settings_window = Settings(menu, speed_options);
+	score_options = ScoreOptions(max_score);
+	settings_window = Settings(menu, speed_options, score_options);
 
 	Initialize_Game_Components();
 	pad_collision_surface = right_pad.h / 2;

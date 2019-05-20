@@ -138,6 +138,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="Options.cpp" />
+    <ClCompile Include="ScoreOptions.cpp" />
     <ClCompile Include="SpeedOptions.cpp" />
     <ClCompile Include="settings.cpp" />
   </ItemGroup>

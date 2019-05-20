@@ -42,6 +42,7 @@ class Game
 		Menu menu;
 		Settings settings_window;
 		SpeedOptions speed_options;
+		ScoreOptions score_options;
 
 		struct 
 		{
@@ -63,6 +64,7 @@ class Game
 		int coefficient;
 		int first_score;
 		int second_score;
+		int max_score;
 
 		//predstavlja index menu itema {0: start game, 1: scoreboard, 2: options, 3: quit game}
 		int menu_position;

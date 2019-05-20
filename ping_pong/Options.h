@@ -50,3 +50,31 @@ class SpeedOptions : public Options
 		void Render(SDL_Renderer **renderer);
 		void FreeData();
 };
+
+class ScoreOptions : public Options
+{
+private:
+	std::string possible_score;
+	int *max_score;
+
+	SDL_Texture *max_score_text;
+	SDL_Texture *max_score_label_text;
+	SDL_Texture *left_arrow_head_texture;
+	SDL_Texture *right_arrow_head_texture;
+
+	SDL_Rect max_score_text_rect;
+	SDL_Rect max_score_label;
+	SDL_Rect left_arrow;
+	SDL_Rect right_arrow;
+
+public:
+	ScoreOptions();
+	ScoreOptions(int &max_score);
+	~ScoreOptions();
+
+	bool UpdateOptions(SDL_Renderer **renderer, int change_index = 0);
+	std::string GetOption();
+	void Init_Textures(SDL_Renderer **renderer, TTF_Font *font);
+	void FreeData();
+	void Render(SDL_Renderer **renderer);
+};

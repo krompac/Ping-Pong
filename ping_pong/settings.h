@@ -16,10 +16,11 @@ class Settings : public Window
 
 		Menu *menu;
 		Options *options;
+		Options *options2;
 
 	public:
 		Settings();
-		Settings(Menu &menu, SpeedOptions &speed_options);
+		Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_options);
 		~Settings();
 
 		void Render(SDL_Renderer **renderer);

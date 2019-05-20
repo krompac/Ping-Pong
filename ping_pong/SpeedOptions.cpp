@@ -19,7 +19,6 @@ SpeedOptions::SpeedOptions(float &speed) : Options()
 	ball_speed_rect = { x + w + 60, 35, 120, 45 };
 	right_arrow = { x + w + ball_speed_rect.w + 70, 40, 40, 35 };
 
-
 	possible_speed = new std::string[3];
 
 	possible_speed[0] = "  Slow  ";
