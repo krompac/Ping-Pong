@@ -26,11 +26,13 @@ class Game
 		SDL_Texture *message_texture;
 		SDL_Texture *answers_textures[2];
 		SDL_Texture *ball_picture;
+		SDL_Texture *winner_texture;
 
 		TTF_Font* font;
 		SDL_Color color;
 		SDL_Surface *surface;
 
+		SDL_Rect winner_rect;
 		SDL_Rect first_number;
 		SDL_Rect second_number;
 		SDL_Rect message_box;
@@ -49,7 +51,7 @@ class Game
 			int x, y;
 		} ball_origin;
 
-		std::string number_text;
+		std::string text_to_convert;
 
 		const int WIDTH = 1000;
 		const int HEIGHT = 600;
@@ -64,7 +66,10 @@ class Game
 		int coefficient;
 		int first_score;
 		int second_score;
+		int player1_rounds;
+		int player2_rounds;
 		int max_score;
+		int number_of_rounds;
 
 		//predstavlja index menu itema {0: start game, 1: scoreboard, 2: options, 3: quit game}
 		int menu_position;
@@ -75,18 +80,19 @@ class Game
 		bool ball_going_right;
 		bool ball_going_up;
 		bool pause;
-		bool quit_game;
+		bool game_won;
 
 		void Init();
 		void Render_Game_Window(bool is_message = false);
-		void Render_Score(SDL_Texture **score, int number);
+		void Texture_From_Text(SDL_Texture **texture, int number = 0, std::string text = "");
 		void Initialize_Message(std::string message);
+		void Restart_Game();
 		void Initialize_Game_Components();
 		void Free();
 		void Update_Ball_Origin();
-		void Free_Score(SDL_Texture *score);
+		void Free_Texture(SDL_Texture *texture);
 		bool Message_Box_Action();
-		bool Ball_Movement();
+		void Ball_Movement();
 		bool Track_Rightpad();
 		bool Main_Loop();
 		bool Check_Corner();

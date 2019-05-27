@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <string>
+#include <vector>
 #include "Window.h"
 #include "menu.h"
 #include "Options.h"
@@ -15,8 +16,9 @@ class Settings : public Window
 		SDL_Event event_handler;
 
 		Menu *menu;
-		Options *options;
-		Options *options2;
+		std::vector<Options *> options;
+		int options_position;
+		int number_of_options;
 
 	public:
 		Settings();

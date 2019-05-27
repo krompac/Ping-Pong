@@ -24,12 +24,14 @@ Game::Game()
 	this->answers_textures[0] = nullptr;
 	this->answers_textures[1] = nullptr;
 	this->ball_picture = nullptr;
+	this->winner_texture = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
 	first_number = { 310, 520, 60, 70 };
 	second_number = { 410, 520, 60, 70 };
 	colon = { 375, 520, 30, 70 };
 	
+	winner_rect = { 180, 70, 400, 100 };
 	message_box = { 180, 190, 400, 150 };
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
 	answers[0] = { 250, 280, 100, 50 };
@@ -74,18 +76,21 @@ void Game::Initialize_Game_Components()
 
 	first_score = 0;
 	second_score = 0;
-	number_text = to_string(first_score);
+	text_to_convert = to_string(first_score);
+	player1_rounds = 0;
+	player2_rounds = 0;
 
 	ball_going_right = ball_going_up = true;
 	pause = false;
+	game_won = false;
 }
 
-void Game::Free_Score(SDL_Texture *score)
+void Game::Free_Texture(SDL_Texture *texture)
 {
-	if (score != nullptr)
+	if (texture != nullptr)
 	{
-		SDL_DestroyTexture(score);
-		score = nullptr;
+		SDL_DestroyTexture(texture);
+		texture = nullptr;
 	}
 
 	if (surface != nullptr)
@@ -99,12 +104,20 @@ void Game::Free()
 {
 }
 
-void Game::Render_Score(SDL_Texture **score, int number)
+void Game::Texture_From_Text(SDL_Texture **texture, int number, string text)
 {
-	Free_Score(*score);
-	number_text = to_string(number);
-	surface = TTF_RenderText_Solid(font, number_text.c_str(), color);
-	*score = SDL_CreateTextureFromSurface(renderer, surface);
+	Free_Texture(*texture);
+	if (text != "")
+	{
+		text_to_convert = text;
+	}
+	else
+	{
+		text_to_convert = to_string(number);
+	}
+	
+	surface = TTF_RenderText_Solid(font, text_to_convert.c_str(), color);
+	*texture = SDL_CreateTextureFromSurface(renderer, surface);
 }
 
 void Game::Render_Game_Window(bool is_message)
@@ -149,6 +162,13 @@ void Game::Render_Game_Window(bool is_message)
 		SDL_RenderCopy(renderer, answers_textures[0], NULL, &answers[0]);
 		SDL_RenderCopy(renderer, answers_textures[1], NULL, &answers[1]);
 	}
+
+	if (game_won)
+	{
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
+		SDL_RenderDrawRect(renderer, &winner_rect);
+		SDL_RenderCopy(renderer, winner_texture, NULL, &winner_rect);
+	}
 	
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 
@@ -163,6 +183,12 @@ void Game::Initialize_Message(string message)
 	answers_textures[0] = SDL_CreateTextureFromSurface(renderer, surface);
 	surface = TTF_RenderText_Solid(font, "No", color);
 	answers_textures[1] = SDL_CreateTextureFromSurface(renderer, surface);
+}
+
+void Game::Restart_Game()
+{
+	Initialize_Message("Would you like to start again?");
+	while (Message_Box_Action());
 }
 
 bool Game::Message_Box_Action()
@@ -193,13 +219,17 @@ bool Game::Message_Box_Action()
 					if (!message_position && menu_position == 0)
 					{
 						Initialize_Game_Components();
-						Render_Score(&left_score, 0);
-						Render_Score(&right_score, 0);
+						Texture_From_Text(&left_score, 0);
+						Texture_From_Text(&right_score, 0);
 					}
 
-					pause = false;
-					Render_Game_Window();
-					SDL_Delay(500);
+					if (!game_won)
+					{
+						pause = false;
+						Render_Game_Window();
+						SDL_Delay(500);
+					}
+					
 					return false;
 			}
 		}
@@ -221,7 +251,7 @@ void Game::Update_Ball_Origin()
 	ball_origin = { ball.x + ball.w / 2, ball.y + ball.h / 2 };
 }
 
-bool Game::Ball_Movement()
+void Game::Ball_Movement()
 {
 	if (!pause)
 	{
@@ -241,7 +271,7 @@ bool Game::Ball_Movement()
 					Update_Ball_Origin();
 					ball_going_right = false;
 					first_score++;
-					Render_Score(&left_score, first_score);
+					Texture_From_Text(&left_score, first_score);
 				}
 
 				if (Check_Corner() || ((ball_origin.x + ball.w / 2 >= right_pad.x) && (ball_origin.y - ball.h / 2) >= right_pad.y && ball_origin.y + ball.h / 2  <= (right_pad.y + right_pad.h)))
@@ -265,7 +295,7 @@ bool Game::Ball_Movement()
 					Update_Ball_Origin();
 					ball_going_right = true;
 					second_score++;
-					Render_Score(&right_score, second_score);
+					Texture_From_Text(&right_score, second_score);
 				}
 
 				if (Check_Corner() || ((ball_origin.x - ball.w / 2 <= left_pad.x + left_pad.w) && (ball_origin.y - ball.h / 2) >= left_pad.y && ball_origin.y + ball.h / 2 <= (left_pad.y + left_pad.h)))
@@ -305,7 +335,19 @@ bool Game::Ball_Movement()
 			}
 		}
 	}
-	return true;
+
+	if (first_score == max_score)
+	{
+		Texture_From_Text(&winner_texture, 0, "Player 1 Wins");
+		game_won = true;
+		Restart_Game();
+	}
+	else if (second_score == max_score)
+	{
+		Texture_From_Text(&winner_texture, 0, "Player 2 Wins");
+		game_won = true;
+		Restart_Game();
+	}
 }
 
 bool Game::Track_Rightpad()
@@ -373,8 +415,7 @@ bool Game::Main_Loop()
 					if (menu_position == 0)
 					{
 						message_position = 0;
-						Initialize_Message("Would you like to start again?");
-						while (Message_Box_Action());
+						Restart_Game();
 					}
 					else if (menu_position == 2)
 					{
@@ -469,16 +510,16 @@ void Game::Init()
 
 		surface = TTF_RenderText_Solid(font, ":", color);
 		colon_texture = SDL_CreateTextureFromSurface(renderer, surface);
-		Render_Score(&left_score, 0);
-		Render_Score(&right_score, 0);
+		Texture_From_Text(&left_score, 0);
+		Texture_From_Text(&right_score, 0);
 
 		surface = IMG_Load("images/circle.png");
 		ball_picture = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_SetTextureColorMod(ball_picture, 0xff, 0x00, 0x00);
+		SDL_SetTextureColorMod(ball_picture, 0x00, 0xff, 0x00);
 		
 		Render_Game_Window();
 
-		while (Main_Loop() && Track_Rightpad());
+		while (Main_Loop() && Track_Rightpad() && !game_won);
 	}
 }
 

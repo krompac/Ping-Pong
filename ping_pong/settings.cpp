@@ -4,8 +4,10 @@ Settings::Settings() {}
 
 Settings::Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_options)
 {
-	this->options = &speed_options;
-	this->options2 = &score_options;
+	options_position = 0;
+	number_of_options = 1;
+	this->options.push_back(&speed_options);
+	this->options.push_back(&score_options);
 	this->menu = &menu;
 	render_window = { 20, 20, 720, 560 };
 }
@@ -21,8 +23,11 @@ void Settings::Render(SDL_Renderer **renderer)
 
 	SDL_SetRenderDrawColor(*renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(*renderer, &render_window);
-	this->options->Render(renderer);
-	this->options2->Render(renderer);
+
+	for (auto option : options)
+	{
+		option->Render(renderer);
+	}
 
 	this->menu->Render_Menu(*renderer);
 
@@ -34,8 +39,10 @@ void Settings::Render(SDL_Renderer **renderer)
 
 void Settings::FreeData()
 {
-	this->options->FreeData();
-	this->options2->FreeData();
+	for (auto option : options)
+	{
+		option->FreeData();
+	}
 }
 
 bool Settings::Window_Action(SDL_Renderer **renderer, bool is_message)
@@ -54,10 +61,26 @@ bool Settings::Window_Action(SDL_Renderer **renderer, bool is_message)
 				case SDLK_ESCAPE:
 					return false;
 				case SDLK_LEFT:
-					this->options->UpdateOptions(renderer, -1);
+					options[options_position]->UpdateOptions(renderer, -1);
 					break;
 				case SDLK_RIGHT:
-					this->options->UpdateOptions(renderer, 1);
+					options[options_position]->UpdateOptions(renderer, 1);
+					break;
+				case SDLK_UP:
+					if (options_position > 0)
+					{
+						options[options_position]->SetActive(false);
+						options_position--;
+						options[options_position]->SetActive(true);
+					}
+					break;
+				case SDLK_DOWN:
+					if (options_position < options.size() - 1)
+					{
+						options[options_position]->SetActive(false);
+						options_position++;
+						options[options_position]->SetActive(true);
+					}
 					break;
 			}
 		}
@@ -68,6 +91,8 @@ bool Settings::Window_Action(SDL_Renderer **renderer, bool is_message)
 
 void Settings::Init_Textures(SDL_Renderer **renderer, TTF_Font *font)
 {
-	this->options->Init_Textures(renderer, font);
-	this->options2->Init_Textures(renderer, font);
+	for (auto option : options)
+	{
+		option->Init_Textures(renderer, font);
+	}
 }
