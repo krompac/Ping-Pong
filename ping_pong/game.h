@@ -15,8 +15,12 @@ class Game
 		SDL_Renderer *renderer;
 		SDL_Event event_handler;
 		SDL_Event message_event;
+
 		SDL_Rect left_pad;
+		Colors left_pad_color;
 		SDL_Rect right_pad;
+		Colors right_pad_color;
+		
 		SDL_Rect ball;
 		SDL_Rect game_window;
 
@@ -45,11 +49,11 @@ class Game
 		Settings settings_window;
 		SpeedOptions speed_options;
 		ScoreOptions score_options;
+		TextureColorOptions ball_color;
+		PadColorOptions left_pad_options;
+		PadColorOptions right_pad_options;
 
-		struct 
-		{
-			int x, y;
-		} ball_origin;
+		struct { int x, y; } ball_origin;
 
 		std::string text_to_convert;
 
@@ -102,5 +106,3 @@ class Game
 		Game();
 		~Game();
 };
-
-

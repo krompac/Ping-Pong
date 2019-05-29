@@ -9,6 +9,7 @@
 #include <math.h>
 #include "game.h"
 #include "menu.h"
+#include "ChangeTextureColor.h"
 
 using namespace std;
 
@@ -44,13 +45,18 @@ Game::Game()
 
 	speed_options = SpeedOptions(starting_ball_speed);
 	score_options = ScoreOptions(max_score);
-	settings_window = Settings(menu, speed_options, score_options);
+	ball_color = TextureColorOptions(&ball_picture, "Ball color", 190, Red);
+	left_pad_options = PadColorOptions("Pad color", 270, left_pad_color, true);
+	right_pad_options = PadColorOptions("Pad color", 350, right_pad_color);
+	settings_window = Settings(menu, speed_options, score_options, ball_color, left_pad_options, right_pad_options);
 
 	Initialize_Game_Components();
 	pad_collision_surface = right_pad.h / 2;
 	coefficient = pad_collision_surface / 10; //+ 0.5;
 
 	color = { 255, 255, 255 };
+	left_pad_color = Blue;
+	right_pad_color = Blue;
 
 	Init();
 }
@@ -123,10 +129,11 @@ void Game::Texture_From_Text(SDL_Texture **texture, int number, string text)
 void Game::Render_Game_Window(bool is_message)
 {
 	SDL_RenderClear(renderer);
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
+	
+	Fill_Rect_With_Color(renderer, left_pad, left_pad_color);
+	Fill_Rect_With_Color(renderer, right_pad, right_pad_color);
 
-	SDL_RenderFillRect(renderer, &left_pad);
-	SDL_RenderFillRect(renderer, &right_pad);
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 
 	SDL_RenderDrawRect(renderer, &first_number);
 	SDL_RenderDrawRect(renderer, &second_number);
@@ -515,11 +522,10 @@ void Game::Init()
 
 		surface = IMG_Load("images/circle.png");
 		ball_picture = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_SetTextureColorMod(ball_picture, 0x00, 0xff, 0x00);
+		ball_color.Init_Textures(&renderer, font);
 		
 		Render_Game_Window();
 
 		while (Main_Loop() && Track_Rightpad() && !game_won);
 	}
 }
-

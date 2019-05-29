@@ -134,6 +134,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChangeTextureColor.cpp" />
+    <ClCompile Include="PadColorOptions.cpp" />
+    <ClCompile Include="TextureColorOptions.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
@@ -143,6 +146,8 @@
     <ClCompile Include="settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChangeTextureColor.h" />
+    <ClInclude Include="ColorEnum.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="Options.h" />

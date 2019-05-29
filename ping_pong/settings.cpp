@@ -2,12 +2,16 @@
 
 Settings::Settings() {}
 
-Settings::Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_options)
+Settings::Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_options,
+	TextureColorOptions &ball_color_options, PadColorOptions &left_pad, PadColorOptions &right_pad) //, ColorOptions &left_pad_color_options, ColorOptions &right_pad_color_options)
 {
 	options_position = 0;
 	number_of_options = 1;
 	this->options.push_back(&speed_options);
 	this->options.push_back(&score_options);
+	this->options.push_back(&ball_color_options);
+	this->options.push_back(&left_pad);
+	this->options.push_back(&right_pad);
 	this->menu = &menu;
 	render_window = { 20, 20, 720, 560 };
 }
@@ -29,6 +33,8 @@ void Settings::Render(SDL_Renderer **renderer)
 		option->Render(renderer);
 	}
 
+	SDL_SetRenderDrawColor(*renderer, 0xCA, 0xCE, 0xAD, 0xff);
+
 	this->menu->Render_Menu(*renderer);
 
 	SDL_SetRenderDrawColor(*renderer, 0x00, 0x00, 0x00, 0xff);
@@ -41,7 +47,7 @@ void Settings::FreeData()
 {
 	for (auto option : options)
 	{
-		option->FreeData();
+		option->Free_Data();
 	}
 }
 
@@ -61,10 +67,10 @@ bool Settings::Window_Action(SDL_Renderer **renderer, bool is_message)
 				case SDLK_ESCAPE:
 					return false;
 				case SDLK_LEFT:
-					options[options_position]->UpdateOptions(renderer, -1);
+					options[options_position]->Update_Options(renderer, -1);
 					break;
 				case SDLK_RIGHT:
-					options[options_position]->UpdateOptions(renderer, 1);
+					options[options_position]->Update_Options(renderer, 1);
 					break;
 				case SDLK_UP:
 					if (options_position > 0)

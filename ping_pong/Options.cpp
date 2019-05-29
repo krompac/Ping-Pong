@@ -1,6 +1,8 @@
 #include "Options.h"
 
-Options::Options()
+Options::Options(){}
+
+Options::Options(std::string option_label_string, int options_y_position, int extended_option_width)
 {
 	this->surface = nullptr;
 	this->left_arrow_head_texture = nullptr;
@@ -9,6 +11,19 @@ Options::Options()
 	this->option_text_label = nullptr;
 
 	color = { 255, 255, 255 };
+	active = false;
+
+	option_label = { 30, options_y_position, 160, 50 };
+
+	int x = option_label.x;
+	int y = option_label.y;
+	int w = option_label.w;
+
+	left_arrow = { x + w + 10, y + 10, 40, 35 };
+	option_rect = { x + w + 60, y + 5, 60 + extended_option_width, 45 };
+	right_arrow = { x + w + option_rect.w + 70, y + 10, 40, 35 };
+
+	this->option_label_string = option_label_string;
 }
 
 void Options::SetTexture(SDL_Texture **texture, SDL_Renderer **renderer, std::string text, TTF_Font *font)
@@ -31,7 +46,7 @@ void Options::Init_Textures(SDL_Renderer ** renderer, TTF_Font * font)
 	SetTexture(&left_arrow_head_texture, renderer, "images/left_arrow_head.png");
 	SetTexture(&right_arrow_head_texture, renderer, "images/right_arrow_head.png");
 
-	SetTexture(&option_text, renderer, GetOption(), font);
+	SetTexture(&option_text, renderer, Get_Option(), font);
 	SetTexture(&option_text_label, renderer, option_label_string.c_str(), font);
 }
 
@@ -40,7 +55,7 @@ void Options::SetActive(bool active)
 	this->active = active;
 }
 
-void Options::FreeData()
+void Options::Free_Data()
 {
 	SDL_FreeSurface(surface);
 	SDL_DestroyTexture(option_text);
@@ -61,3 +76,4 @@ void Options::Render(SDL_Renderer ** renderer)
 	SDL_RenderCopy(*renderer, left_arrow_head_texture, NULL, &left_arrow);
 	SDL_RenderCopy(*renderer, right_arrow_head_texture, NULL, &right_arrow);
 }
+
