@@ -5,6 +5,7 @@
 #include <string>
 #include "menu.h"
 #include "settings.h"
+#include "Scoreboard.h"
 #include "Options.h"
 #undef main
 
@@ -47,6 +48,7 @@ class Game
 
 		Menu menu;
 		Settings settings_window;
+		Scoreboard scoreboard_window;
 		SpeedOptions speed_options;
 		ScoreOptions score_options;
 		TextureColorOptions ball_color;

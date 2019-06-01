@@ -49,6 +49,7 @@ Game::Game()
 	left_pad_options = PadColorOptions("Pad color", 270, left_pad_color, true);
 	right_pad_options = PadColorOptions("Pad color", 350, right_pad_color);
 	settings_window = Settings(menu, speed_options, score_options, ball_color, left_pad_options, right_pad_options);
+	scoreboard_window = Scoreboard(menu);
 
 	Initialize_Game_Components();
 	pad_collision_surface = right_pad.h / 2;
@@ -423,6 +424,13 @@ bool Game::Main_Loop()
 					{
 						message_position = 0;
 						Restart_Game();
+					}
+					else if (menu_position == 1)
+					{
+						do
+						{
+							scoreboard_window.Render(&renderer);
+						} while (scoreboard_window.Window_Action(&renderer));
 					}
 					else if (menu_position == 2)
 					{

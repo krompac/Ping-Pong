@@ -3,7 +3,7 @@
 Settings::Settings() {}
 
 Settings::Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_options,
-	TextureColorOptions &ball_color_options, PadColorOptions &left_pad, PadColorOptions &right_pad) //, ColorOptions &left_pad_color_options, ColorOptions &right_pad_color_options)
+	TextureColorOptions &ball_color_options, PadColorOptions &left_pad, PadColorOptions &right_pad) : Window(menu) //, ColorOptions &left_pad_color_options, ColorOptions &right_pad_color_options)
 {
 	options_position = 0;
 	number_of_options = 1;
@@ -12,8 +12,6 @@ Settings::Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_
 	this->options.push_back(&ball_color_options);
 	this->options.push_back(&left_pad);
 	this->options.push_back(&right_pad);
-	this->menu = &menu;
-	render_window = { 20, 20, 720, 560 };
 }
 
 Settings::~Settings()
@@ -23,19 +21,12 @@ Settings::~Settings()
 
 void Settings::Render(SDL_Renderer **renderer)
 {
-	SDL_RenderClear(*renderer);
-
-	SDL_SetRenderDrawColor(*renderer, 0xCA, 0xCE, 0xAD, 0xff);
-	SDL_RenderDrawRect(*renderer, &render_window);
+	Window::Render(renderer);
 
 	for (auto option : options)
 	{
 		option->Render(renderer);
 	}
-
-	SDL_SetRenderDrawColor(*renderer, 0xCA, 0xCE, 0xAD, 0xff);
-
-	this->menu->Render_Menu(*renderer);
 
 	SDL_SetRenderDrawColor(*renderer, 0x00, 0x00, 0x00, 0xff);
 

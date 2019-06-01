@@ -13,9 +13,7 @@
 class Settings : public Window
 {
 	private:
-		SDL_Event event_handler;
-
-		Menu *menu;
+		
 		std::vector<Options *> options;
 		int options_position;
 		int number_of_options;
