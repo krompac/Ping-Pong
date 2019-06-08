@@ -66,17 +66,17 @@ bool Settings::Window_Action(SDL_Renderer **renderer, bool is_message)
 				case SDLK_UP:
 					if (options_position > 0)
 					{
-						options[options_position]->SetActive(false);
+						options[options_position]->Set_Active(false);
 						options_position--;
-						options[options_position]->SetActive(true);
+						options[options_position]->Set_Active(true);
 					}
 					break;
 				case SDLK_DOWN:
 					if (options_position < options.size() - 1)
 					{
-						options[options_position]->SetActive(false);
+						options[options_position]->Set_Active(false);
 						options_position++;
-						options[options_position]->SetActive(true);
+						options[options_position]->Set_Active(true);
 					}
 					break;
 			}

@@ -32,6 +32,7 @@ class Game
 		SDL_Texture *answers_textures[2];
 		SDL_Texture *ball_picture;
 		SDL_Texture *winner_texture;
+		SDL_Texture *some_texture;
 
 		TTF_Font* font;
 		SDL_Color color;
@@ -45,10 +46,12 @@ class Game
 		SDL_Rect answers[2];
 		SDL_Rect colon;
 		SDL_Rect *menuitems;
+		SDL_Rect some_text_rect;
 
 		Menu menu;
 		Settings settings_window;
 		Scoreboard scoreboard_window;
+		Score_Entry entry;
 		SpeedOptions speed_options;
 		ScoreOptions score_options;
 		TextureColorOptions ball_color;
@@ -58,6 +61,7 @@ class Game
 		struct { int x, y; } ball_origin;
 
 		std::string text_to_convert;
+		std::string some_text;
 
 		const int WIDTH = 1000;
 		const int HEIGHT = 600;
@@ -72,8 +76,6 @@ class Game
 		int coefficient;
 		int first_score;
 		int second_score;
-		int player1_rounds;
-		int player2_rounds;
 		int max_score;
 		int number_of_rounds;
 
@@ -87,6 +89,7 @@ class Game
 		bool ball_going_up;
 		bool pause;
 		bool game_won;
+		bool player1_entered_name;
 
 		void Init();
 		void Render_Game_Window(bool is_message = false);
@@ -103,6 +106,8 @@ class Game
 		bool Main_Loop();
 		bool Check_Corner();
 		bool Settings_Window_Action();
+		bool Text_Input();
+		int Calculate_Text_Width();
 
 	public:
 		Game();

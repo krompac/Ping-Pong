@@ -13,7 +13,6 @@
 class Settings : public Window
 {
 	private:
-		
 		std::vector<Options *> options;
 		int options_position;
 		int number_of_options;
@@ -21,7 +20,7 @@ class Settings : public Window
 	public:
 		Settings();
 		Settings(Menu &menu, SpeedOptions &speed_options, ScoreOptions &score_options,
-			TextureColorOptions &ball_color_options, PadColorOptions &left_pad, PadColorOptions &right_pad); //, ColorOptions &left_pad_color_options, ColorOptions &right_pad_color_options);
+			TextureColorOptions &ball_color_options, PadColorOptions &left_pad, PadColorOptions &right_pad);
 		~Settings();
 
 		void Render(SDL_Renderer **renderer);
