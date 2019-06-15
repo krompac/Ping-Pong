@@ -51,7 +51,7 @@ bool SpeedOptions::Update_Options(SDL_Renderer **renderer, int change_index)
 				*ball_speed = 5;
 				break;
 			case 2:
-				*ball_speed = 7;
+				*ball_speed = 20;
 				break;
 		}
 
