@@ -21,7 +21,7 @@ bool ScoreOptions::Update_Options(SDL_Renderer ** renderer, int change_index)
 	{
 		*max_score = possible_index;
 		possible_score = std::to_string(possible_index);
-		Set_Texture(&option_text, renderer, Get_Option(), TTF_OpenFont("images/Sans.ttf", 100));
+		SetTexture(&option_text, renderer, Get_Option(), TTF_OpenFont("images/Sans.ttf", 100));
 
 		return true;
 	}

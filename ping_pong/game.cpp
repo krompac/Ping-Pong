@@ -26,14 +26,12 @@ Game::Game()
 	this->answers_textures[1] = nullptr;
 	this->ball_picture = nullptr;
 	this->winner_texture = nullptr;
-	this->some_texture = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
 	first_number = { 310, 520, 60, 70 };
 	second_number = { 410, 520, 60, 70 };
 	colon = { 375, 520, 30, 70 };
 	
-	some_text_rect = { 180, 225, 0, 80 };
 	winner_rect = { 180, 70, 400, 100 };
 	message_box = { 180, 190, 400, 150 };
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
@@ -86,13 +84,12 @@ void Game::Initialize_Game_Components()
 	first_score = 0;
 	second_score = 0;
 	text_to_convert = to_string(first_score);
-	
-	player1_entered_name = false;
+	player1_rounds = 0;
+	player2_rounds = 0;
+
 	ball_going_right = ball_going_up = true;
 	pause = false;
 	game_won = false;
-
-	some_text = "";
 }
 
 void Game::Free_Texture(SDL_Texture *texture)
@@ -147,7 +144,7 @@ void Game::Render_Game_Window(bool is_message)
 
 	SDL_SetRenderDrawColor(renderer, 0xCA, 0xCE, 0xAD, 0xff);
 	SDL_RenderDrawRect(renderer, &game_window);
-
+	
 	if (pause)
 	{
 		SDL_RenderDrawRect(renderer, &menuitems[menu_position]);
@@ -176,15 +173,9 @@ void Game::Render_Game_Window(bool is_message)
 
 	if (game_won)
 	{
-		SDL_RenderDrawRect(renderer, &some_text_rect);
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 		SDL_RenderDrawRect(renderer, &winner_rect);
 		SDL_RenderCopy(renderer, winner_texture, NULL, &winner_rect);
-
-		if (!some_text.empty())
-		{
-			SDL_RenderCopy(renderer, some_texture, NULL, &some_text_rect);
-		}
 	}
 	
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
@@ -204,9 +195,6 @@ void Game::Initialize_Message(string message)
 
 void Game::Restart_Game()
 {
-	while (Text_Input());
-	while (Text_Input());
-
 	Initialize_Message("Would you like to start again?");
 	while (Message_Box_Action());
 }
@@ -439,12 +427,10 @@ bool Game::Main_Loop()
 					}
 					else if (menu_position == 1)
 					{
-						scoreboard_window.Init_Texture(&renderer, font);
 						do
 						{
 							scoreboard_window.Render(&renderer);
 						} while (scoreboard_window.Window_Action(&renderer));
-						scoreboard_window.Free_Data();
 					}
 					else if (menu_position == 2)
 					{
@@ -474,6 +460,8 @@ bool Game::Main_Loop()
 
 			Ball_Movement();
 			Render_Game_Window();
+
+			return true;
 		}
 	}
 
@@ -508,150 +496,6 @@ bool Game::Settings_Window_Action()
 	return true;
 }
 
-bool Game::Text_Input()
-{
-	while (SDL_PollEvent(&message_event))
-	{
-		if (message_event.type == SDL_QUIT)
-			this->~Game();
-		else if (message_event.type == SDL_KEYDOWN)
-		{
-			switch (message_event.key.keysym.sym)
-			{
-				case SDLK_q:
-					some_text += "q";
-					break;
-				case SDLK_w:
-					some_text += "w";
-					break;
-				case SDLK_e:
-					some_text += "e";
-					break;
-				case SDLK_r:
-					some_text += "r";
-					break;
-				case SDLK_t:
-					some_text += "t";
-					break;
-				case SDLK_z:
-					some_text += "z";
-					break;
-				case SDLK_u:
-					some_text += "u";
-					break;
-				case SDLK_i:
-					some_text += "i";
-					break;
-				case SDLK_o:
-					some_text += "o";
-					break;
-				case SDLK_p:
-					some_text += "p";
-					break;
-				case SDLK_a:
-					some_text += "a";
-					break;
-				case SDLK_s:
-					some_text += "s";
-					break;
-				case SDLK_d:
-					some_text += "d";
-					break;
-				case SDLK_f:
-					some_text += "f";
-					break;
-				case SDLK_g:
-					some_text += "g";
-					break;
-				case SDLK_h:
-					some_text += "h";
-					break;
-				case SDLK_j:
-					some_text += "j";
-					break;
-				case SDLK_k:
-					some_text += "k";
-					break;
-				case SDLK_l:
-					some_text += "l";
-					break;
-				case SDLK_y:
-					some_text += "y";
-					break;
-				case SDLK_x:
-					some_text += "x";
-					break;
-				case SDLK_c:
-					some_text += "c";
-					break;
-				case SDLK_v:
-					some_text += "v";
-					break;
-				case SDLK_b:
-					some_text += "b";
-					break;
-				case SDLK_n:
-					some_text += "n";
-					break;
-				case SDLK_m:
-					some_text += "m";
-					break;
-				case SDLK_SPACE:
-					some_text += " ";
-					break;
-				case SDLK_BACKSPACE:
-					if (!some_text.empty())
-					{
-						some_text.pop_back();
-					}
-					break;
-				case SDLK_RETURN:
-					if (!player1_entered_name)
-					{
-						entry.player1_name = some_text;
-						entry.player1_score = first_score;
-						player1_entered_name = true;
-					}
-					else
-					{
-						entry.player2_name = some_text;
-						entry.player2_score = second_score;
-						scoreboard_window.Add_Score_Entry(entry);
-					}
-
-					return false;
-			}
-
-			some_text_rect.w = Calculate_Text_Width();
-			Texture_From_Text(&some_texture, 0, some_text);
-		}
-	}
-
-	Render_Game_Window();
-	SDL_Delay(1);
-
-	return true;
-}
-
-int Game::Calculate_Text_Width()
-{
-	int lenght = 0;
-
-	for (int i = 0; i < some_text.length(); i++)
-	{
-		if (some_text[i] == ' ')
-		{
-			lenght += 30;
-		}
-		else
-		{
-			lenght += 60;
-		}
-	}
-
-	return lenght;
-}
-
 void Game::Init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -683,7 +527,6 @@ void Game::Init()
 		colon_texture = SDL_CreateTextureFromSurface(renderer, surface);
 		Texture_From_Text(&left_score, 0);
 		Texture_From_Text(&right_score, 0);
-		Texture_From_Text(&some_texture, 0, some_text);
 
 		surface = IMG_Load("images/circle.png");
 		ball_picture = SDL_CreateTextureFromSurface(renderer, surface);
