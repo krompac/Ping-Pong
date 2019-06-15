@@ -55,7 +55,7 @@ bool SpeedOptions::Update_Options(SDL_Renderer **renderer, int change_index)
 				break;
 		}
 
-		Set_Texture(&option_text, renderer, Get_Option(), TTF_OpenFont("images/Sans.ttf", 100));
+		SetTexture(&option_text, renderer, Get_Option(), TTF_OpenFont("images/Sans.ttf", 100));
 
 		return true;
 	}
