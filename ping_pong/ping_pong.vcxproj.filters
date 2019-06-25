@@ -54,6 +54,9 @@
     <ClCompile Include="UI_Element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Score_Row.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">

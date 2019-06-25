@@ -34,7 +34,7 @@ class Game
 		SDL_Texture *winner_texture;
 		SDL_Texture *some_texture;
 
-		TTF_Font* font;
+		TTF_Font *font;
 		SDL_Color color;
 		SDL_Surface *surface;
 
@@ -90,6 +90,7 @@ class Game
 		bool pause;
 		bool game_won;
 		bool player1_entered_name;
+		bool player2_entered_name;
 
 		void Init();
 		void Render_Game_Window(bool is_message = false);
@@ -100,12 +101,12 @@ class Game
 		void Free();
 		void Update_Ball_Origin();
 		void Free_Texture(SDL_Texture *texture);
-		bool Message_Box_Action();
+		void Entry_Input(std::string &player_name, int &player_score, int achieved_score, bool &player_entered_name);
 		void Ball_Movement();
+		bool Message_Box_Action();
 		bool Track_Rightpad();
 		bool Main_Loop();
 		bool Check_Corner();
-		bool Settings_Window_Action();
 		bool Text_Input();
 		int Calculate_Text_Width();
 

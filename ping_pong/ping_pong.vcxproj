@@ -137,6 +137,7 @@
     <ClCompile Include="ChangeTextureColor.cpp" />
     <ClCompile Include="PadColorOptions.cpp" />
     <ClCompile Include="Scoreboard.cpp" />
+    <ClCompile Include="Score_Row.cpp" />
     <ClCompile Include="TextureColorOptions.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />

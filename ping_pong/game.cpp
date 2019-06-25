@@ -39,7 +39,7 @@ Game::Game()
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
 	answers[0] = { 250, 280, 100, 50 };
 	answers[1] = { 430, 280, 100, 50 };
-	max_score = 5;
+	max_score = 1;
 
 	menuitems = new SDL_Rect[4];
 
@@ -87,7 +87,7 @@ void Game::Initialize_Game_Components()
 	second_score = 0;
 	text_to_convert = to_string(first_score);
 	
-	player1_entered_name = false;
+	player1_entered_name = player2_entered_name = false;
 	ball_going_right = ball_going_up = true;
 	pause = false;
 	game_won = false;
@@ -108,6 +108,16 @@ void Game::Free_Texture(SDL_Texture *texture)
 		SDL_FreeSurface(surface);
 		surface = nullptr;
 	}
+}
+
+void Game::Entry_Input(std::string &player_name, int &player_score, int achieved_score, bool &player_entered_name)
+{
+	player_name = some_text;
+	player_score = achieved_score;
+	player_entered_name = true;
+
+	some_text = "";
+	some_text_rect.w = 0;
 }
 
 void Game::Free()
@@ -176,14 +186,18 @@ void Game::Render_Game_Window(bool is_message)
 
 	if (game_won)
 	{
-		SDL_RenderDrawRect(renderer, &some_text_rect);
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
 		SDL_RenderDrawRect(renderer, &winner_rect);
 		SDL_RenderCopy(renderer, winner_texture, NULL, &winner_rect);
 
-		if (!some_text.empty())
+		if (!player2_entered_name)
 		{
-			SDL_RenderCopy(renderer, some_texture, NULL, &some_text_rect);
+			SDL_RenderDrawRect(renderer, &some_text_rect);
+
+			if (!some_text.empty())
+			{
+				SDL_RenderCopy(renderer, some_texture, NULL, &some_text_rect);
+			}
 		}
 	}
 	
@@ -223,41 +237,41 @@ bool Game::Message_Box_Action()
 		{
 			switch (message_event.key.keysym.sym)
 			{
-				case SDLK_LEFT:
-					if (message_position)
-					{
-						message_position--;
-					}
-					break;
-				case SDLK_RIGHT:
-					if (!message_position)
-					{
-						message_position++;
-					}
-					break;
-				case SDLK_SPACE:
-					if (!message_position && menu_position == 0)
-					{
-						Initialize_Game_Components();
-						Texture_From_Text(&left_score, 0);
-						Texture_From_Text(&right_score, 0);
-					}
+			case SDLK_LEFT:
+				if (message_position)
+				{
+					message_position--;
+				}
+				break;
+			case SDLK_RIGHT:
+				if (!message_position)
+				{
+					message_position++;
+				}
+				break;
+			case SDLK_RETURN:
+				if (!message_position)
+				{
+					Initialize_Game_Components();
+					Texture_From_Text(&left_score, 0);
+					Texture_From_Text(&right_score, 0);
+				}
 
-					if (!game_won)
-					{
-						pause = false;
-						Render_Game_Window();
-						SDL_Delay(500);
-					}
-					
-					return false;
+				if (!game_won)
+				{
+					pause = false;
+					Render_Game_Window();
+					SDL_Delay(500);
+				}
+
+				return false;
 			}
+			
+			Render_Game_Window(true);
+			SDL_Delay(1);
+
+			return true;
 		}
-
-		Render_Game_Window(true);
-		SDL_Delay(1);
-
-		return true;
 	}
 
 	Render_Game_Window(true);
@@ -495,19 +509,6 @@ bool Game::Check_Corner()
 	return ((pow((x_coord), 2) + pow((y_coord), 2)) <= pow(ball.w / 2, 2)) || ((pow((x_coord), 2) + pow((y_coord + right_pad.h), 2)) <= pow(ball.w / 2, 2));
 }
 
-bool Game::Settings_Window_Action()
-{
-	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
-
-	if (pause)
-	{
-
-	}
-
-
-	return true;
-}
-
 bool Game::Text_Input()
 {
 	while (SDL_PollEvent(&message_event))
@@ -608,14 +609,11 @@ bool Game::Text_Input()
 				case SDLK_RETURN:
 					if (!player1_entered_name)
 					{
-						entry.player1_name = some_text;
-						entry.player1_score = first_score;
-						player1_entered_name = true;
+						Entry_Input(entry.player1_name, entry.player1_score, first_score, player1_entered_name);
 					}
 					else
 					{
-						entry.player2_name = some_text;
-						entry.player2_score = second_score;
+						Entry_Input(entry.player2_name, entry.player2_score, second_score, player2_entered_name);
 						scoreboard_window.Add_Score_Entry(entry);
 					}
 
