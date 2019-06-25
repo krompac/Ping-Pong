@@ -146,6 +146,7 @@
     <ClCompile Include="ScoreOptions.cpp" />
     <ClCompile Include="SpeedOptions.cpp" />
     <ClCompile Include="settings.cpp" />
+    <ClCompile Include="UI_Element.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
