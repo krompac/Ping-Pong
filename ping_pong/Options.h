@@ -11,8 +11,8 @@ class Options
 	public:
 		Options();
 		Options(std::string option_label_string, int options_y_position, int extended_option_width = 0);
-		void Set_Texture(SDL_Texture **texture, SDL_Renderer **renderer, std::string text, TTF_Font *font = nullptr);
-		void Set_Active(bool active);
+		void SetTexture(SDL_Texture **texture, SDL_Renderer **renderer, std::string text, TTF_Font *font = nullptr);
+		void SetActive(bool active);
 
 		virtual void Free_Data();
 		virtual void Render(SDL_Renderer **renderer);

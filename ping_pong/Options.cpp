@@ -26,7 +26,7 @@ Options::Options(std::string option_label_string, int options_y_position, int ex
 	this->option_label_string = option_label_string;
 }
 
-void Options::Set_Texture(SDL_Texture **texture, SDL_Renderer **renderer, std::string text, TTF_Font *font)
+void Options::SetTexture(SDL_Texture **texture, SDL_Renderer **renderer, std::string text, TTF_Font *font)
 {
 	if (font == nullptr)
 	{
@@ -43,14 +43,14 @@ void Options::Set_Texture(SDL_Texture **texture, SDL_Renderer **renderer, std::s
 
 void Options::Init_Textures(SDL_Renderer ** renderer, TTF_Font * font)
 {
-	Set_Texture(&left_arrow_head_texture, renderer, "images/left_arrow_head.png");
-	Set_Texture(&right_arrow_head_texture, renderer, "images/right_arrow_head.png");
+	SetTexture(&left_arrow_head_texture, renderer, "images/left_arrow_head.png");
+	SetTexture(&right_arrow_head_texture, renderer, "images/right_arrow_head.png");
 
-	Set_Texture(&option_text, renderer, Get_Option(), font);
-	Set_Texture(&option_text_label, renderer, option_label_string.c_str(), font);
+	SetTexture(&option_text, renderer, Get_Option(), font);
+	SetTexture(&option_text_label, renderer, option_label_string.c_str(), font);
 }
 
-void Options::Set_Active(bool active)
+void Options::SetActive(bool active)
 {
 	this->active = active;
 }
@@ -76,3 +76,4 @@ void Options::Render(SDL_Renderer ** renderer)
 	SDL_RenderCopy(*renderer, left_arrow_head_texture, NULL, &left_arrow);
 	SDL_RenderCopy(*renderer, right_arrow_head_texture, NULL, &right_arrow);
 }
+
