@@ -101,14 +101,15 @@ class Game
 		void Free();
 		void Update_Ball_Origin();
 		void Free_Texture(SDL_Texture *texture);
-		void Entry_Input(std::string &player_name, int &player_score, int achieved_score, bool &player_entered_name);
+		void Entry_Input(char *player_name, int &player_score, int achieved_score, bool &player_entered_name);
 		void Ball_Movement();
+		void Enter_Record();
 		bool Message_Box_Action();
 		bool Track_Rightpad();
 		bool Main_Loop();
 		bool Check_Corner();
 		bool Text_Input();
-		int Calculate_Text_Width();
+		void Set_Text_Width();
 
 	public:
 		Game();

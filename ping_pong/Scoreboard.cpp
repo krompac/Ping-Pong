@@ -1,4 +1,6 @@
 #include "Scoreboard.h"
+#include <fstream>
+#include <algorithm>
 
 Scoreboard::Scoreboard() {}
 
@@ -10,6 +12,8 @@ Scoreboard::Scoreboard(Menu &menu) : Window(menu)
 	title.text = "SCOREBOARD";
 
 	color = { 255, 255, 255 };
+
+	std::cout << sizeof(entry_to_read) << std::endl;
 }
 
 Scoreboard::~Scoreboard(){}
@@ -69,13 +73,50 @@ void Scoreboard::Free_Data()
 	}
 }
 
-void Scoreboard::Add_Score_Entry(Score_Entry entry)
+void Scoreboard::Add_Score_Entry(Score_Entry entry, bool write_to_file)
 {
+	if (write_to_file)
+	{
+		std::fstream dat;
+		dat.open("savefile.dat", std::ios::binary | std::ios::out | std::ios::app);
+		dat.write((char *)&entry, sizeof(entry));
+
+		dat.close();
+	}
+
 	Score_Row score = Score_Row(entry);
 
 	score_entrys.push_back(score);
 
-	if (score_entrys.size() > 3)
+	Update_Entrys();
+}
+
+void Scoreboard::Init_Data()
+{
+	std::fstream dat;
+	dat.open("savefile.dat", std::ios::in | std::ios::binary);
+
+	while (true)
+	{
+		dat.read((char *)&entry_to_read, sizeof(Score_Entry));
+
+		if (dat.eof())
+		{
+			break;
+		}
+
+		Add_Score_Entry(entry_to_read);
+	}
+
+	std::reverse(score_entrys.begin(), score_entrys.end());
+
+	dat.close();
+	dat.clear();
+}
+
+void Scoreboard::Update_Entrys()
+{
+	while (score_entrys.size() > 10)
 	{
 		score_entrys.erase(score_entrys.begin());
 	}

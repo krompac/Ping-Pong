@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
@@ -7,6 +8,7 @@
 #include <SDL_ttf.h>
 #include <string>
 #include <math.h>
+#include <fstream>
 #include "game.h"
 #include "menu.h"
 #include "ChangeTextureColor.h"
@@ -33,7 +35,7 @@ Game::Game()
 	second_number = { 410, 520, 60, 70 };
 	colon = { 375, 520, 30, 70 };
 	
-	some_text_rect = { 180, 225, 0, 80 };
+	some_text_rect = { 290, 225, 0, 80 };
 	winner_rect = { 180, 70, 400, 100 };
 	message_box = { 180, 190, 400, 150 };
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
@@ -110,9 +112,9 @@ void Game::Free_Texture(SDL_Texture *texture)
 	}
 }
 
-void Game::Entry_Input(std::string &player_name, int &player_score, int achieved_score, bool &player_entered_name)
+void Game::Entry_Input(char *player_name, int &player_score, int achieved_score, bool &player_entered_name)
 {
-	player_name = some_text;
+	SDL_strlcpy(player_name, some_text.c_str(), 10);
 	player_score = achieved_score;
 	player_entered_name = true;
 
@@ -235,21 +237,22 @@ bool Game::Message_Box_Action()
 			this->~Game();
 		else if (message_event.type == SDL_KEYDOWN)
 		{
-			switch (message_event.key.keysym.sym)
+			if (message_event.key.keysym.sym == SDLK_LEFT)
 			{
-			case SDLK_LEFT:
 				if (message_position)
 				{
 					message_position--;
 				}
-				break;
-			case SDLK_RIGHT:
+			}
+			else if (message_event.key.keysym.sym == SDLK_RIGHT)
+			{
 				if (!message_position)
 				{
 					message_position++;
 				}
-				break;
-			case SDLK_RETURN:
+			}
+			else if (message_event.key.keysym.sym == SDLK_RETURN || message_event.key.keysym.sym == SDLK_SPACE)
+			{
 				if (!message_position)
 				{
 					Initialize_Game_Components();
@@ -384,6 +387,19 @@ void Game::Ball_Movement()
 	}
 }
 
+void Game::Enter_Record()
+{
+	if (!player1_entered_name)
+	{
+		Entry_Input(entry.player1_name, entry.player1_score, first_score, player1_entered_name);
+	}
+	else
+	{
+		Entry_Input(entry.player2_name, entry.player2_score, second_score, player2_entered_name);
+		scoreboard_window.Add_Score_Entry(entry, true);
+	}
+}
+
 bool Game::Track_Rightpad()
 {
 	const Uint8 *keyboard_state_array = SDL_GetKeyboardState(NULL);
@@ -444,7 +460,7 @@ bool Game::Main_Loop()
 						menu_position++;
 					}
 				}
-				else if (event_handler.key.keysym.sym == SDLK_SPACE)
+				else if (event_handler.key.keysym.sym == SDLK_SPACE || event_handler.key.keysym.sym == SDLK_RETURN)
 				{
 					if (menu_position == 0)
 					{
@@ -517,110 +533,125 @@ bool Game::Text_Input()
 			this->~Game();
 		else if (message_event.type == SDL_KEYDOWN)
 		{
-			switch (message_event.key.keysym.sym)
+			if (some_text.length() < 10)
 			{
-				case SDLK_q:
-					some_text += "q";
-					break;
-				case SDLK_w:
-					some_text += "w";
-					break;
-				case SDLK_e:
-					some_text += "e";
-					break;
-				case SDLK_r:
-					some_text += "r";
-					break;
-				case SDLK_t:
-					some_text += "t";
-					break;
-				case SDLK_z:
-					some_text += "z";
-					break;
-				case SDLK_u:
-					some_text += "u";
-					break;
-				case SDLK_i:
-					some_text += "i";
-					break;
-				case SDLK_o:
-					some_text += "o";
-					break;
-				case SDLK_p:
-					some_text += "p";
-					break;
-				case SDLK_a:
-					some_text += "a";
-					break;
-				case SDLK_s:
-					some_text += "s";
-					break;
-				case SDLK_d:
-					some_text += "d";
-					break;
-				case SDLK_f:
-					some_text += "f";
-					break;
-				case SDLK_g:
-					some_text += "g";
-					break;
-				case SDLK_h:
-					some_text += "h";
-					break;
-				case SDLK_j:
-					some_text += "j";
-					break;
-				case SDLK_k:
-					some_text += "k";
-					break;
-				case SDLK_l:
-					some_text += "l";
-					break;
-				case SDLK_y:
-					some_text += "y";
-					break;
-				case SDLK_x:
-					some_text += "x";
-					break;
-				case SDLK_c:
-					some_text += "c";
-					break;
-				case SDLK_v:
-					some_text += "v";
-					break;
-				case SDLK_b:
-					some_text += "b";
-					break;
-				case SDLK_n:
-					some_text += "n";
-					break;
-				case SDLK_m:
-					some_text += "m";
-					break;
-				case SDLK_SPACE:
-					some_text += " ";
-					break;
-				case SDLK_BACKSPACE:
-					if (!some_text.empty())
-					{
-						some_text.pop_back();
-					}
-					break;
-				case SDLK_RETURN:
-					if (!player1_entered_name)
-					{
-						Entry_Input(entry.player1_name, entry.player1_score, first_score, player1_entered_name);
-					}
-					else
-					{
-						Entry_Input(entry.player2_name, entry.player2_score, second_score, player2_entered_name);
-						scoreboard_window.Add_Score_Entry(entry);
-					}
+				switch (message_event.key.keysym.sym)
+				{
+					case SDLK_q:
+						some_text += "q";
+						break;
+					case SDLK_w:
+						some_text += "w";
+						break;
+					case SDLK_e:
+						some_text += "e";
+						break;
+					case SDLK_r:
+						some_text += "r";
+						break;
+					case SDLK_t:
+						some_text += "t";
+						break;
+					case SDLK_z:
+						some_text += "z";
+						break;
+					case SDLK_u:
+						some_text += "u";
+						break;
+					case SDLK_i:
+						some_text += "i";
+						break;
+					case SDLK_o:
+						some_text += "o";
+						break;
+					case SDLK_p:
+						some_text += "p";
+						break;
+					case SDLK_a:
+						some_text += "a";
+						break;
+					case SDLK_s:
+						some_text += "s";
+						break;
+					case SDLK_d:
+						some_text += "d";
+						break;
+					case SDLK_f:
+						some_text += "f";
+						break;
+					case SDLK_g:
+						some_text += "g";
+						break;
+					case SDLK_h:
+						some_text += "h";
+						break;
+					case SDLK_j:
+						some_text += "j";
+						break;
+					case SDLK_k:
+						some_text += "k";
+						break;
+					case SDLK_l:
+						some_text += "l";
+						break;
+					case SDLK_y:
+						some_text += "y";
+						break;
+					case SDLK_x:
+						some_text += "x";
+						break;
+					case SDLK_c:
+						some_text += "c";
+						break;
+					case SDLK_v:
+						some_text += "v";
+						break;
+					case SDLK_b:
+						some_text += "b";
+						break;
+					case SDLK_n:
+						some_text += "n";
+						break;
+					case SDLK_m:
+						some_text += "m";
+						break;
+					case SDLK_SPACE:
+						some_text += " ";
+						break;
+					case SDLK_BACKSPACE:
+						if (!some_text.empty())
+						{
+							if (some_text.back() == ' ')
+							{
+								some_text_rect.x += 5;
+							}
+							else
+							{
+								some_text_rect.x += 10;
+							}
 
-					return false;
+							some_text.pop_back();
+						}
+						break;
+					case SDLK_RETURN:
+						Enter_Record();
+						return false;
+				}
+			}
+			else
+			{
+				switch (message_event.key.keysym.sym)
+				{
+					case SDLK_BACKSPACE:
+						some_text.pop_back();
+						break;
+					case SDLK_RETURN:
+						Enter_Record();
+						return false;
+				}
 			}
 
-			some_text_rect.w = Calculate_Text_Width();
+			Set_Text_Width();
 			Texture_From_Text(&some_texture, 0, some_text);
 		}
 	}
@@ -631,23 +662,28 @@ bool Game::Text_Input()
 	return true;
 }
 
-int Game::Calculate_Text_Width()
+void Game::Set_Text_Width()
 {
 	int lenght = 0;
+	int x_pos = 290;
 
 	for (int i = 0; i < some_text.length(); i++)
 	{
 		if (some_text[i] == ' ')
 		{
 			lenght += 30;
+			x_pos -= 5;
+			
 		}
 		else
 		{
 			lenght += 60;
+			x_pos -= 20;
 		}
 	}
 
-	return lenght;
+	some_text_rect.w = lenght;
+	some_text_rect.x = x_pos;
 }
 
 void Game::Init()
@@ -686,6 +722,8 @@ void Game::Init()
 		surface = IMG_Load("images/circle.png");
 		ball_picture = SDL_CreateTextureFromSurface(renderer, surface);
 		ball_color.Init_Textures(&renderer, font);
+		
+		scoreboard_window.Init_Data();
 		
 		Render_Game_Window();
 

@@ -18,10 +18,10 @@ class UI_Element
 
 struct Score_Entry
 {
-	std::string player1_name;
+	char player1_name[10];
 	int player1_score;
 
-	std::string player2_name;
+	char player2_name[10];
 	int player2_score;
 };
 
@@ -55,14 +55,19 @@ class Scoreboard : public Window
 		void Render(SDL_Renderer **renderer);
 		void Init_Texture(SDL_Renderer **renderer, TTF_Font *font);
 		void Free_Data();
-		void Add_Score_Entry(Score_Entry entry);
+		void Add_Score_Entry(Score_Entry entry, bool write_to_file = false);
+		void Init_Data();
 
 	private:
 		SDL_Surface *surface;
 		SDL_Color color;
 		UI_Element title;
 
+		Score_Entry entry_to_read;
+
 		std::vector<Score_Row> score_entrys;
 
 		std::string title_text;
+
+		void Update_Entrys();
 };
