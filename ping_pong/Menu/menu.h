@@ -26,4 +26,3 @@ class Menu
 		void Render_Menu(SDL_Renderer *renderer);
 		void Init(SDL_Surface *surface, TTF_Font *font, SDL_Color &color, SDL_Renderer *renderer);
 };
-

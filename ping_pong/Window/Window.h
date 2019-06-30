@@ -20,4 +20,3 @@ class Window
 
 		Menu *menu;
 };
-

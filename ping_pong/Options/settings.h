@@ -29,4 +29,3 @@ class Settings : public Window
 		bool Window_Action(SDL_Renderer **renderer, bool is_message = false);
 		void Init_Textures(SDL_Renderer **renderer, TTF_Font *font);
 };
-

@@ -76,4 +76,3 @@ void Options::Render(SDL_Renderer ** renderer)
 	SDL_RenderCopy(*renderer, left_arrow_head_texture, NULL, &left_arrow);
 	SDL_RenderCopy(*renderer, right_arrow_head_texture, NULL, &right_arrow);
 }
-
