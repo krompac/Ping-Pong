@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="ChangeTextureColor.cpp" />
-    <ClCompile Include="PadColorOptions.cpp" />
-    <ClCompile Include="Scoreboard.cpp" />
-    <ClCompile Include="Score_Row.cpp" />
-    <ClCompile Include="TextureColorOptions.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="menu.cpp" />
-    <ClCompile Include="Options.cpp" />
-    <ClCompile Include="ScoreOptions.cpp" />
-    <ClCompile Include="SpeedOptions.cpp" />
-    <ClCompile Include="settings.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="UI_Element.cpp" />
+    <ClCompile Include="Window\Window.cpp" />
+    <ClCompile Include="Options\ScoreOptions.cpp" />
+    <ClCompile Include="Options\settings.cpp" />
+    <ClCompile Include="Options\SpeedOptions.cpp" />
+    <ClCompile Include="Options\TextureColorOptions.cpp" />
+    <ClCompile Include="Options\Options.cpp" />
+    <ClCompile Include="Options\PadColorOptions.cpp" />
+    <ClCompile Include="Other\ChangeTextureColor.cpp" />
+    <ClCompile Include="Menu\menu.cpp" />
+    <ClCompile Include="Scoreboard\Score_Row.cpp" />
+    <ClCompile Include="Scoreboard\Scoreboard.cpp" />
+    <ClCompile Include="Scoreboard\UI_Element.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChangeTextureColor.h" />
-    <ClInclude Include="ColorEnum.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="menu.h" />
-    <ClInclude Include="Options.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Scoreboard.h" />
-    <ClInclude Include="settings.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Window\Window.h" />
+    <ClInclude Include="Options\settings.h" />
+    <ClInclude Include="Options\Options.h" />
+    <ClInclude Include="Other\ChangeTextureColor.h" />
+    <ClInclude Include="Other\ColorEnum.h" />
+    <ClInclude Include="Menu\menu.h" />
+    <ClInclude Include="Scoreboard\Scoreboard.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ping_pong.rc" />
@@ -44,5 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="images\Sans.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="savefile.dat" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 #include "Scoreboard.h"
 #include <fstream>
-#include <algorithm>
 
 Scoreboard::Scoreboard() {}
 
@@ -8,34 +7,29 @@ Scoreboard::Scoreboard(Menu &menu) : Window(menu)
 {
 	this->surface = nullptr;
 	title = UI_Element();
-	title.rect = { 220, 25, 300, 100 };
+	title.rect = { 230, 25, 300, 100 };
 	title.text = "SCOREBOARD";
 
 	color = { 255, 255, 255 };
-
-	std::cout << sizeof(entry_to_read) << std::endl;
 }
 
 Scoreboard::~Scoreboard(){}
 
 bool Scoreboard::Window_Action(SDL_Renderer **renderer, bool is_message)
 {
-	bool stayInWindow = true;
-
 	while (SDL_PollEvent(&event_handler))
 	{
 		if (event_handler.key.keysym.sym == SDLK_ESCAPE || event_handler.type == SDL_QUIT)
 		{
-			stayInWindow = false;
-			break;
+			return false;
 		}
 		else
 		{
-			break;
+			return true;
 		}
 	}
 
-	return stayInWindow;
+	return true;
 }
 
 void Scoreboard::Render(SDL_Renderer **renderer)
@@ -96,19 +90,20 @@ void Scoreboard::Init_Data()
 	std::fstream dat;
 	dat.open("savefile.dat", std::ios::in | std::ios::binary);
 
-	while (true)
+	if (dat.is_open())
 	{
-		dat.read((char *)&entry_to_read, sizeof(Score_Entry));
-
-		if (dat.eof())
+		while (true)
 		{
-			break;
+			dat.read((char *)&entry_to_read, sizeof(Score_Entry));
+
+			if (dat.eof())
+			{
+				break;
+			}
+
+			Add_Score_Entry(entry_to_read);
 		}
-
-		Add_Score_Entry(entry_to_read);
 	}
-
-	std::reverse(score_entrys.begin(), score_entrys.end());
 
 	dat.close();
 	dat.clear();
@@ -116,7 +111,7 @@ void Scoreboard::Init_Data()
 
 void Scoreboard::Update_Entrys()
 {
-	while (score_entrys.size() > 10)
+	while (score_entrys.size() > 7)
 	{
 		score_entrys.erase(score_entrys.begin());
 	}

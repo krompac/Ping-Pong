@@ -46,11 +46,24 @@ void Score_Row::Free_Data()
 
 void Score_Row::UpdatePosition(int index)
 {
-	int y_pos = 130 + (index * 55);
+	int y_pos = 150 + (index * 55);
 
-	player1_name.rect = { 25, y_pos, 100, 50 };
-	player1_score.rect = { 130, y_pos, 50, 50 };
-	colon.rect = { 185, y_pos, 25, 50 };
-	player2_name.rect = { 215, y_pos, 100, 50 };
-	player2_score.rect = { 320, y_pos, 50, 50 };
+	player1_name.rect = { 160, y_pos, 150, 50 };
+	player1_score.rect = { player1_name.rect.w + player1_name.rect.x + 5, y_pos, 50, 50 };
+	colon.rect = { player1_score.rect.x + player1_score.rect.w + 5, y_pos, 25, 50 };
+	player2_name.rect = { colon.rect.x + colon.rect.w + 5, y_pos, 150, 50 };
+	player2_score.rect = { player2_name.rect.x + player2_name.rect.w + 5, y_pos, 50, 50 };
+}
+
+std::string Score_Row::Convert_To_String(int number)
+{
+	std::string number_text = std::to_string(number);
+
+	if (number < 10)
+	{
+		std::string space = " ";
+		number_text.append(space);
+	}
+
+	return number_text;
 }

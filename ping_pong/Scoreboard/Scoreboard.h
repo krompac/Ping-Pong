@@ -42,6 +42,8 @@ class Score_Row
 		UI_Element colon;
 		UI_Element player2_name;
 		UI_Element player2_score;
+
+		std::string Convert_To_String(int number);
 };
 
 class Scoreboard : public Window

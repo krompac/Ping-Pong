@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\TOMY\source\repos\ping_pong\ping_pong\Scoreboard;C:\Users\TOMY\source\repos\ping_pong\ping_pong\Menu;C:\Users\TOMY\source\repos\ping_pong\ping_pong\Other;C:\Users\TOMY\source\repos\ping_pong\ping_pong\Options;C:\Users\TOMY\source\repos\ping_pong\ping_pong\Window;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -134,31 +135,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ChangeTextureColor.cpp" />
-    <ClCompile Include="PadColorOptions.cpp" />
-    <ClCompile Include="Scoreboard.cpp" />
-    <ClCompile Include="Score_Row.cpp" />
-    <ClCompile Include="TextureColorOptions.cpp" />
+    <ClCompile Include="Other\ChangeTextureColor.cpp" />
+    <ClCompile Include="Options\PadColorOptions.cpp" />
+    <ClCompile Include="Scoreboard\Scoreboard.cpp" />
+    <ClCompile Include="Scoreboard\Score_Row.cpp" />
+    <ClCompile Include="Options\TextureColorOptions.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="menu.cpp" />
-    <ClCompile Include="Options.cpp" />
-    <ClCompile Include="ScoreOptions.cpp" />
-    <ClCompile Include="SpeedOptions.cpp" />
-    <ClCompile Include="settings.cpp" />
-    <ClCompile Include="UI_Element.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Menu\menu.cpp" />
+    <ClCompile Include="Options\Options.cpp" />
+    <ClCompile Include="Options\ScoreOptions.cpp" />
+    <ClCompile Include="Options\SpeedOptions.cpp" />
+    <ClCompile Include="Options\settings.cpp" />
+    <ClCompile Include="Scoreboard\UI_Element.cpp" />
+    <ClCompile Include="Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChangeTextureColor.h" />
-    <ClInclude Include="ColorEnum.h" />
+    <ClInclude Include="Other\ChangeTextureColor.h" />
+    <ClInclude Include="Other\ColorEnum.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="menu.h" />
-    <ClInclude Include="Options.h" />
+    <ClInclude Include="Menu\menu.h" />
+    <ClInclude Include="Options\Options.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Scoreboard.h" />
-    <ClInclude Include="settings.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Scoreboard\Scoreboard.h" />
+    <ClInclude Include="Options\settings.h" />
+    <ClInclude Include="Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="images\arrow_head.png" />
@@ -177,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ping_pong.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="savefile.dat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -114,6 +114,12 @@ void Game::Free_Texture(SDL_Texture *texture)
 
 void Game::Entry_Input(char *player_name, int &player_score, int achieved_score, bool &player_entered_name)
 {
+	string space = " ";
+	while (some_text.length() < 10)
+	{
+		some_text.append(space.c_str());
+	}
+
 	SDL_strlcpy(player_name, some_text.c_str(), 10);
 	player_score = achieved_score;
 	player_entered_name = true;
@@ -533,7 +539,7 @@ bool Game::Text_Input()
 			this->~Game();
 		else if (message_event.type == SDL_KEYDOWN)
 		{
-			if (some_text.length() < 10)
+			if (some_text.length() < 9)
 			{
 				switch (message_event.key.keysym.sym)
 				{
@@ -712,6 +718,8 @@ void Game::Init()
 		font = TTF_OpenFont("images/Sans.ttf", 100);
 		
 		menu.Init(surface, font, color, renderer);
+
+		SDL_ShowCursor(SDL_DISABLE);
 
 		surface = TTF_RenderText_Solid(font, ":", color);
 		colon_texture = SDL_CreateTextureFromSurface(renderer, surface);
