@@ -28,14 +28,14 @@ Game::Game()
 	this->answers_textures[1] = nullptr;
 	this->ball_picture = nullptr;
 	this->winner_texture = nullptr;
-	this->some_texture = nullptr;
+	this->user_text_texture = nullptr;
 
 	game_window = { 20, 20, 720, 480 };
 	first_number = { 310, 520, 60, 70 };
 	second_number = { 410, 520, 60, 70 };
 	colon = { 375, 520, 30, 70 };
 	
-	some_text_rect = { 290, 225, 0, 80 };
+	user_text_rect = { 290, 225, 0, 80 };
 	winner_rect = { 180, 70, 400, 100 };
 	message_box = { 180, 190, 400, 150 };
 	message = { message_box.x + 10, message_box.y + 10, 380, 60 };
@@ -94,7 +94,7 @@ void Game::Initialize_Game_Components()
 	pause = false;
 	game_won = false;
 
-	some_text = "";
+	user_text = "";
 }
 
 void Game::Free_Texture(SDL_Texture *texture)
@@ -115,17 +115,17 @@ void Game::Free_Texture(SDL_Texture *texture)
 void Game::Entry_Input(char *player_name, int &player_score, int achieved_score, bool &player_entered_name)
 {
 	string space = " ";
-	while (some_text.length() < 10)
+	while (user_text.length() < 10)
 	{
-		some_text.append(space.c_str());
+		user_text.append(space.c_str());
 	}
 
-	SDL_strlcpy(player_name, some_text.c_str(), 10);
+	SDL_strlcpy(player_name, user_text.c_str(), 10);
 	player_score = achieved_score;
 	player_entered_name = true;
 
-	some_text = "";
-	some_text_rect.w = 0;
+	user_text = "";
+	user_text_rect.w = 0;
 }
 
 void Game::Free()
@@ -200,11 +200,11 @@ void Game::Render_Game_Window(bool is_message)
 
 		if (!player2_entered_name)
 		{
-			SDL_RenderDrawRect(renderer, &some_text_rect);
+			SDL_RenderDrawRect(renderer, &user_text_rect);
 
-			if (!some_text.empty())
+			if (!user_text.empty())
 			{
-				SDL_RenderCopy(renderer, some_texture, NULL, &some_text_rect);
+				SDL_RenderCopy(renderer, user_text_texture, NULL, &user_text_rect);
 			}
 		}
 	}
@@ -539,104 +539,104 @@ bool Game::Text_Input()
 			this->~Game();
 		else if (message_event.type == SDL_KEYDOWN)
 		{
-			if (some_text.length() < 9)
+			if (user_text.length() < 9)
 			{
 				switch (message_event.key.keysym.sym)
 				{
 					case SDLK_q:
-						some_text += "q";
+						user_text += "q";
 						break;
 					case SDLK_w:
-						some_text += "w";
+						user_text += "w";
 						break;
 					case SDLK_e:
-						some_text += "e";
+						user_text += "e";
 						break;
 					case SDLK_r:
-						some_text += "r";
+						user_text += "r";
 						break;
 					case SDLK_t:
-						some_text += "t";
+						user_text += "t";
 						break;
 					case SDLK_z:
-						some_text += "z";
+						user_text += "z";
 						break;
 					case SDLK_u:
-						some_text += "u";
+						user_text += "u";
 						break;
 					case SDLK_i:
-						some_text += "i";
+						user_text += "i";
 						break;
 					case SDLK_o:
-						some_text += "o";
+						user_text += "o";
 						break;
 					case SDLK_p:
-						some_text += "p";
+						user_text += "p";
 						break;
 					case SDLK_a:
-						some_text += "a";
+						user_text += "a";
 						break;
 					case SDLK_s:
-						some_text += "s";
+						user_text += "s";
 						break;
 					case SDLK_d:
-						some_text += "d";
+						user_text += "d";
 						break;
 					case SDLK_f:
-						some_text += "f";
+						user_text += "f";
 						break;
 					case SDLK_g:
-						some_text += "g";
+						user_text += "g";
 						break;
 					case SDLK_h:
-						some_text += "h";
+						user_text += "h";
 						break;
 					case SDLK_j:
-						some_text += "j";
+						user_text += "j";
 						break;
 					case SDLK_k:
-						some_text += "k";
+						user_text += "k";
 						break;
 					case SDLK_l:
-						some_text += "l";
+						user_text += "l";
 						break;
 					case SDLK_y:
-						some_text += "y";
+						user_text += "y";
 						break;
 					case SDLK_x:
-						some_text += "x";
+						user_text += "x";
 						break;
 					case SDLK_c:
-						some_text += "c";
+						user_text += "c";
 						break;
 					case SDLK_v:
-						some_text += "v";
+						user_text += "v";
 						break;
 					case SDLK_b:
-						some_text += "b";
+						user_text += "b";
 						break;
 					case SDLK_n:
-						some_text += "n";
+						user_text += "n";
 						break;
 					case SDLK_m:
-						some_text += "m";
+						user_text += "m";
 						break;
 					case SDLK_SPACE:
-						some_text += " ";
+						user_text += " ";
 						break;
 					case SDLK_BACKSPACE:
-						if (!some_text.empty())
+						if (!user_text.empty())
 						{
-							if (some_text.back() == ' ')
+							if (user_text.back() == ' ')
 							{
-								some_text_rect.x += 5;
+								user_text_rect.x += 5;
 							}
 							else
 							{
-								some_text_rect.x += 10;
+								user_text_rect.x += 10;
 							}
 
-							some_text.pop_back();
+							user_text.pop_back();
 						}
 						break;
 					case SDLK_RETURN:
@@ -649,7 +649,7 @@ bool Game::Text_Input()
 				switch (message_event.key.keysym.sym)
 				{
 					case SDLK_BACKSPACE:
-						some_text.pop_back();
+						user_text.pop_back();
 						break;
 					case SDLK_RETURN:
 						Enter_Record();
@@ -658,7 +658,7 @@ bool Game::Text_Input()
 			}
 
 			Set_Text_Width();
-			Texture_From_Text(&some_texture, 0, some_text);
+			Texture_From_Text(&user_text_texture, 0, user_text);
 		}
 	}
 
@@ -673,9 +673,9 @@ void Game::Set_Text_Width()
 	int lenght = 0;
 	int x_pos = 290;
 
-	for (int i = 0; i < some_text.length(); i++)
+	for (int i = 0; i < user_text.length(); i++)
 	{
-		if (some_text[i] == ' ')
+		if (user_text[i] == ' ')
 		{
 			lenght += 30;
 			x_pos -= 5;
@@ -688,8 +688,8 @@ void Game::Set_Text_Width()
 		}
 	}
 
-	some_text_rect.w = lenght;
-	some_text_rect.x = x_pos;
+	user_text_rect.w = lenght;
+	user_text_rect.x = x_pos;
 }
 
 void Game::Init()
@@ -725,7 +725,7 @@ void Game::Init()
 		colon_texture = SDL_CreateTextureFromSurface(renderer, surface);
 		Texture_From_Text(&left_score, 0);
 		Texture_From_Text(&right_score, 0);
-		Texture_From_Text(&some_texture, 0, some_text);
+		Texture_From_Text(&user_text_texture, 0, user_text);
 
 		surface = IMG_Load("images/circle.png");
 		ball_picture = SDL_CreateTextureFromSurface(renderer, surface);

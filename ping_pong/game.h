@@ -32,7 +32,7 @@ class Game
 		SDL_Texture *answers_textures[2];
 		SDL_Texture *ball_picture;
 		SDL_Texture *winner_texture;
-		SDL_Texture *some_texture;
+		SDL_Texture *user_text_texture;
 
 		TTF_Font *font;
 		SDL_Color color;
@@ -46,7 +46,7 @@ class Game
 		SDL_Rect answers[2];
 		SDL_Rect colon;
 		SDL_Rect *menuitems;
-		SDL_Rect some_text_rect;
+		SDL_Rect user_text_rect;
 
 		Menu menu;
 		Settings settings_window;
@@ -61,7 +61,7 @@ class Game
 		struct { int x, y; } ball_origin;
 
 		std::string text_to_convert;
-		std::string some_text;
+		std::string user_text;
 
 		const int WIDTH = 1000;
 		const int HEIGHT = 600;
